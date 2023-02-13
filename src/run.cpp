@@ -17,7 +17,6 @@ FILE *_debug;
 
 
 void start_simulator(char* filename, int numtraces, policy c_policy) {
-
     _debug = fopen("logs/debug.log", "w");
 
     fprintf(_debug,"top of %s\n", __func__);
