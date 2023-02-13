@@ -1,0 +1,21 @@
+gromacs: Inclusive Policy
+Cache: level: 2, sets: 1024, ways: 8, capacity: 524288, block_bits: 6,tag_bits: 48, index_bits: 10
+Cache: level: 3, sets: 2048, ways: 16, capacity: 2097152, block_bits: 6,tag_bits: 47, index_bits: 11
+L1 Misses 3431511
+L2 Misses 336851
+L3 Misses 170531
+Elapsed Time: 6.923 secs
+gromacs: Exclusive Policy
+Cache: level: 2, sets: 1024, ways: 8, capacity: 524288, block_bits: 6,tag_bits: 48, index_bits: 10
+Cache: level: 3, sets: 2048, ways: 16, capacity: 2097152, block_bits: 6,tag_bits: 47, index_bits: 11
+L1 Misses 3431511
+L2 Misses 336724
+L3 Misses 159302
+Elapsed Time: 6.430 secs
+gromacs: Nine Policy
+Cache: level: 2, sets: 1024, ways: 8, capacity: 524288, block_bits: 6,tag_bits: 48, index_bits: 10
+Cache: level: 3, sets: 2048, ways: 16, capacity: 2097152, block_bits: 6,tag_bits: 47, index_bits: 11
+L1 Misses 3431511
+L2 Misses 336724
+L3 Misses 170459
+Elapsed Time: 6.314 secs

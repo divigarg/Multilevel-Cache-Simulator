@@ -1,5 +1,6 @@
 #pragma once
 
+#include <bits/stdc++.h>
 #include <run.h>
 #include <replacement.h>
 /*
@@ -74,11 +75,11 @@ class Cache {
     */
 
     struct cache_block **blocks;
-
     int         last_access_way;
     struct cache_block    *victim;
 
     struct access_list         *lists;
+    std::set<unsigned long long> l3_unique_blocks;
 
     void lookup(struct cache_block*);
     void copy(struct cache_block*);
@@ -92,7 +93,6 @@ class Cache {
     Cache (int w, int b_size, unsigned long c, int lvl) {
 
         fprintf(_debug, "%s: top \n", __func__);
-        int i = 0;
         this->level = lvl;
         this->ways = w;
         this->capacity = c;
@@ -111,13 +111,15 @@ class Cache {
         this->blocks = (struct cache_block**)malloc(sizeof(struct cache_block*)*sets);
         fprintf(_debug, "%s: 2d array pointer allocated\n", __func__);
 
-        for (i; i < sets; i++) 
+        for (int i = 0; i < sets; i++)
             this->blocks[i] = (struct cache_block*)malloc(sizeof(struct cache_block)*ways);
-        
-        fprintf(_debug, "%s: sizeof blocks array: (%d, %d), ways: %d\n", __func__, sizeof(this->blocks)/sizeof(struct cache_block*), sizeof(this->blocks[0])/sizeof(struct cache_block), ways);
 
         this->lists = (struct access_list*)malloc(sizeof(struct access_list)*sets);
+        for(int i = 0; i < sets; i++)
+            this->lists[i].head = NULL;
         
+        fprintf(_debug, "%s: list struct head null : %d\n", __func__, this->lists[0].head == NULL);
+        l3_unique_blocks.clear();
     };
       
 };

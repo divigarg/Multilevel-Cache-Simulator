@@ -1,0 +1,9 @@
+gromacs: Inclusive Policy
+Cache: level: 2, sets: 1024, ways: 8, capacity: 524288, block_bits: 6,tag_bits: 48, index_bits: 10
+Cache: level: 3, sets: 1, ways: 32768, capacity: 2097152, block_bits: 6,tag_bits: 58, index_bits: 0
+L1 Misses 3431511
+L2 Misses 336940
+L3 Misses 169368
+L3 Cold Misses 107962
+L3 Capacity Misses 61406
+Elapsed Time: 120.184 secs

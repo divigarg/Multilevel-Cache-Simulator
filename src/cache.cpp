@@ -103,7 +103,6 @@ int Cache::invoke_repl_policy(int index) {
 void Cache::update_repl_params(int index, int way) {
 
     fprintf(_debug,"%s: top index : %d, way : %d\n", __func__, index, way);
-    fprintf(_debug, "%s: lists size: %d\n", __func__, sizeof(lists)/sizeof(lists[0]));
 
     struct list_item *_item = lists[index].find_item(way);
     fprintf(_debug,"%s: after find_item func\n", __func__);

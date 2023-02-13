@@ -9,13 +9,15 @@
 using namespace std;
 using namespace std::chrono;
 
+int partNo;
+
 map<string, int> tracefiles = {
-    {"bzip2.log_l1misstrace", 2},
-    {"gcc.log_l1misstrace", 2},
+    // {"bzip2.log_l1misstrace", 2},
+    // {"gcc.log_l1misstrace", 2},
     {"gromacs.log_l1misstrace", 1},
-    {"h264ref.log_l1misstrace", 1},
-    {"hmmer.log_l1misstrace", 1},
-    {"sphinx3.log_l1misstrace", 2},    
+    // {"h264ref.log_l1misstrace", 1},
+    // {"hmmer.log_l1misstrace", 1},
+    // {"sphinx3.log_l1misstrace", 2},    
 };
 
 extern FILE *_debug;
@@ -34,6 +36,14 @@ void handle_signal(int s) {
 
 int main(int argc, char* argv[]) {
 
+    if(argc != 2){
+        printf("Usage: ./bin/simulator <part no.>\n");
+        exit(0);
+    }
+
+    if(string(argv[1]) == "2") partNo = 2;
+    else partNo = 1;
+
     for (int i =0; i < 19; i++)
         signal(i, handle_signal);
 
@@ -48,19 +58,21 @@ int main(int argc, char* argv[]) {
         duration<double> timeTaken = eTime-sTime;
         printf("Elapsed Time: %.3f secs\n", timeTaken.count()); 
 
-        // sTime = system_clock::now(); 
-        // start_simulator((char*)("./traces/" + kvtraces.first).c_str(), numtraces, EXCLUSIVE);
-        // eTime = system_clock::now();
-        
-        // timeTaken = eTime-sTime;
-        // printf("Elapsed Time: %.3f secs\n", timeTaken.count()); 
+        if(partNo == 1){
+            sTime = system_clock::now(); 
+            start_simulator((char*)("./traces/" + kvtraces.first).c_str(), numtraces, EXCLUSIVE);
+            eTime = system_clock::now();
+            
+            timeTaken = eTime-sTime;
+            printf("Elapsed Time: %.3f secs\n", timeTaken.count()); 
 
-        // sTime = system_clock::now();         
-        // start_simulator((char*)("./traces/" + kvtraces.first).c_str(), numtraces, NINE);
-        // eTime = system_clock::now();
+            sTime = system_clock::now();         
+            start_simulator((char*)("./traces/" + kvtraces.first).c_str(), numtraces, NINE);
+            eTime = system_clock::now();
 
-        // timeTaken = eTime-sTime;
-        // printf("Elapsed Time: %.3f secs\n", timeTaken.count()); 
+            timeTaken = eTime-sTime;
+            printf("Elapsed Time: %.3f secs\n", timeTaken.count()); 
+        }
     }
     return 1;  
 }

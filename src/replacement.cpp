@@ -41,7 +41,7 @@ struct list_item* access_list::find_item(int _way) {
             return tmp;
         // fprintf(_debug, "%s: do_while, way: %d\n", tmp->way)
         // usleep(100000); // 100ms
-        fprintf(_debug,"%s: No match: tmp->way = %d, isNULL %d\n", __func__, tmp->way, tmp->next == NULL);
+        // fprintf(_debug,"%s: No match: tmp->way = %d, isNULL %d\n", __func__, tmp->way, tmp->next == NULL);
         tmp = tmp->next;
         
     } while (tmp != head);

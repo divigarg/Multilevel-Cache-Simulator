@@ -5,8 +5,11 @@
 #include <iostream>
 #include <bits/stdc++.h>
 
+
+
 using namespace std;
 
+extern int partNo;
 
 struct env *global_env;
 
@@ -77,9 +80,10 @@ void start_simulator(char* filename, int numtraces, policy c_policy) {
 void init_caches() {
     l2_cache = new Cache (8, 64, 512 KB, L2);
 
-    l3_cache = new Cache (16, 64, 2 MB, L3);
-    // l3_cache = new Cache (32768, 64, 2 MB, L3);
-
+    if(partNo == 2)
+        l3_cache = new Cache (32768, 64, 2 MB, L3);
+    else
+        l3_cache = new Cache (16, 64, 2 MB, L3);
 }
 
 
@@ -241,8 +245,12 @@ void process_entry(struct entry *_entry) {
     * If a block get evicted from L2, relax!
     */
     else if (global_env->cache_policy == INCLUSIVE) {
-        // fprintf(_debug,"%s: inside inclusive L3 miss\n", __func__);
-
+        fprintf(_debug,"%s: inside inclusive L3 miss\n", __func__);
+        if(partNo == 2)
+            if(l3_cache->l3_unique_blocks.find(l3_block->tag) == l3_cache->l3_unique_blocks.end()){
+                l3_cache->l3_unique_blocks.insert(l3_block->tag);
+                global_env->l3_cold_misses++;
+            }
         l3_cache->copy(l3_block);
         fprintf(_debug,"%s: after copying block with index = %d, tag = %lld and valid = %d to L3 cache\n",
                 __func__, l3_block->index, l3_block->tag, l3_block->valid);
@@ -326,4 +334,8 @@ void print_stats() {
     cout << "L1 Misses " << global_env->l1_misses << endl;
     cout << "L2 Misses " << global_env->l2_misses << endl;
     cout << "L3 Misses " << global_env->l3_misses << endl;
+    if(partNo == 2){
+        cout << "L3 Cold Misses " << global_env->l3_cold_misses << endl;
+        cout << "L3 Capacity Misses " << global_env->l3_misses - global_env->l3_cold_misses << endl;
+    }
 }

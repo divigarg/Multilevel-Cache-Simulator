@@ -24,6 +24,7 @@ struct env {
     unsigned long       l1_misses;
     unsigned long       l2_misses;
     unsigned long       l3_misses;
+    unsigned long       l3_cold_misses;
 
     env(const std::string &t, policy p) {
         trace = t;
@@ -31,6 +32,7 @@ struct env {
         l1_misses = 0;
         l2_misses = 0;
         l3_misses = 0;
+        l3_cold_misses = 0;
     };
 
 };
