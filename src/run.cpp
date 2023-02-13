@@ -10,6 +10,8 @@
 using namespace std;
 
 extern int partNo;
+extern char replAlgo;
+
 
 struct env *global_env;
 
@@ -33,7 +35,8 @@ void start_simulator(char* filename, int numtraces, policy c_policy) {
     _debug = fopen("logs/debug.log", "w");
 
     fprintf(_debug,"top of %s\n", __func__);
-    FILE *fp;
+    FILE *fp, *fpbelady;
+    
     char input_name[256];
 
     struct entry *_entry = (struct entry*)malloc(sizeof(struct entry));
@@ -44,6 +47,29 @@ void start_simulator(char* filename, int numtraces, policy c_policy) {
     // start reading trace file
     fprintf(_debug,"Init Cache successful\n");
 
+    //preprocessing in belady
+    if(partNo == 2 && replAlgo == 'b'){
+        char input_name_b[256];
+        for (int k=0; k<numtraces; k++) {
+            sprintf(input_name_b, "%s_%d", filename, k);
+            fprintf(_debug,"belady preprocess: inputname: %s\n", input_name);
+            fpbelady = fopen(input_name_b, "rb");
+            assert(fpbelady != NULL);
+
+            int counter = 0;
+            while (!feof(fpbelady)) {
+                counter++;
+                fread(&_entry->iord, sizeof(char), 1, fpbelady);
+                fread(&_entry->type, sizeof(char), 1, fpbelady);
+                fread(&_entry->addr, sizeof(unsigned long long), 1, fpbelady);
+                fread(&_entry->pc, sizeof(unsigned), 1, fpbelady);
+
+                l3_cache->preprocess_belady(_entry, counter-1); 
+            }
+            fclose(fpbelady);
+            fprintf(_debug,"Done belady processing file %d!\n", k);
+        }
+    }
 
     for (int k=0; k<numtraces; k++) {
         sprintf(input_name, "%s_%d", filename, k);
@@ -199,13 +225,6 @@ void process_entry(struct entry *_entry) {
             l3_cache->update_repl_params(l3_block->index, l3_block->way);
             l2_cache->copy(l2_block);
             l2_cache->update_repl_params(l2_block->index, l2_block->way);
-            // If a block gets evicted from L2 -> Put it in L3 cache
-            // if (l2_cache->victim != NULL){
-            //     _victim = convert_l2_to_l3(l2_cache->victim);
-            //     // l3_block->valid = true;
-            //     l3_cache->copy(l3_block);
-
-            // }
 
         }
 
@@ -304,10 +323,6 @@ void process_entry(struct entry *_entry) {
 
         l2_cache->copy(l2_block);
         l2_cache->update_repl_params(l2_block->index, l2_block->way);
-        // if (l2_cache->victim != NULL) {
-        //     _victim = convert_l2_to_l3(l2_cache->victim);
-        //     l3_cache->copy(_victim);
-        // }
 
     }
 

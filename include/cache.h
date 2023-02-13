@@ -80,6 +80,7 @@ class Cache {
 
     struct access_list         *lists;
     std::set<unsigned long long> l3_unique_blocks;
+    std::map<int, std::vector<int>> min_set;
 
     void lookup(struct cache_block*);
     void copy(struct cache_block*);
@@ -89,6 +90,7 @@ class Cache {
     struct cache_block* get_block(unsigned long long);
     int get_target_way(int index);
     unsigned long long get_addr(struct cache_block*);
+    void preprocess_belady(struct entry *, int);
 
     Cache (int w, int b_size, unsigned long c, int lvl) {
 
@@ -120,6 +122,7 @@ class Cache {
         
         fprintf(_debug, "%s: list struct head null : %d\n", __func__, this->lists[0].head == NULL);
         l3_unique_blocks.clear();
+        min_set.clear();       
     };
       
 };

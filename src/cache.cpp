@@ -4,7 +4,8 @@
 #include <bits/stdc++.h>
 #include <stdexcept>
 
-
+extern int partNo;
+extern char replAlgo;
 
 extern FILE *_debug;
 
@@ -83,24 +84,32 @@ void Cache::invalidate(struct cache_block *_block) {
 int Cache::invoke_repl_policy(int index) {
     // it should set the victim cache block
     // Victim will be the tail of list
-    struct cache_block _tmp;
-    fprintf(_debug, "%s: before _victim index = %d, head = %p\n", __func__, index, lists[index].head);
-
-    struct list_item *_victim = lists[index].head->prev;
-
-    if (is_null(_victim)) {
-        throw_error("error in replacment list of index %d\n", index);
+    if(partNo == 2 && replAlgo == 'b' && this->level == 3){
+        //for belady replacement
+        
     }
-    fprintf(_debug, "%s: before _tmp\n", __func__);
-    _tmp = blocks[index][_victim->way];
-    // invalidate(&blocks[index][_victim->way]);
-    victim = new struct cache_block(_tmp.index, _tmp.way, _tmp.tag);
-    
-    return _victim->way;
+    else{
+        struct cache_block _tmp;
+        fprintf(_debug, "%s: before _victim index = %d, head = %p\n", __func__, index, lists[index].head);
+
+        struct list_item *_victim = lists[index].head->prev;
+
+        if (is_null(_victim)) {
+            throw_error("error in replacment list of index %d\n", index);
+        }
+        fprintf(_debug, "%s: before _tmp\n", __func__);
+        _tmp = blocks[index][_victim->way];
+        // invalidate(&blocks[index][_victim->way]);
+        victim = new struct cache_block(_tmp.index, _tmp.way, _tmp.tag);
+        
+        return _victim->way;
+    }
 }
 
-
+//will not be used in belady;
 void Cache::update_repl_params(int index, int way) {
+    if(partNo == 2 && replAlgo == 'b' && this->level == 3) return;
+
 
     fprintf(_debug,"%s: top index : %d, way : %d\n", __func__, index, way);
 
@@ -145,6 +154,11 @@ int Cache::get_target_way(int index) {
     
     return -1;
 
+}
+void Cache::preprocess_belady(struct entry *traceEntry, int index) {
+    int address = traceEntry->addr;
+    address = address >> block_bits;
+    if (traceEntry->type) min_set[address].emplace_back(index);
 }
 
 bool lookup_l1(struct entry *_entry) {

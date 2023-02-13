@@ -10,6 +10,7 @@ using namespace std;
 using namespace std::chrono;
 
 int partNo;
+char replAlgo;
 
 map<string, int> tracefiles = {
     // {"bzip2.log_l1misstrace", 2},
@@ -35,14 +36,25 @@ void handle_signal(int s) {
 }
 
 int main(int argc, char* argv[]) {
-
-    if(argc != 2){
-        printf("Usage: ./bin/simulator <part no.>\n");
+    if(argc < 2){
+        printf("Usage: ./bin/simulator <part no. either 1, 2l: for 2 lru, 2b: for 2 belady> \n");
         exit(0);
     }
 
-    if(string(argv[1]) == "2") partNo = 2;
-    else partNo = 1;
+    if(string(argv[1]) == "2l") {
+        partNo = 2;
+        replAlgo = 'l';
+    }   
+    else if(string(argv[1]) == "2b"){
+        partNo = 2;
+        replAlgo = 'b';
+    } 
+    else if(string(argv[1]) == "1") partNo = 1;
+    else{
+        printf("Usage: ./bin/simulator <part no. either 1, 2l: for 2 lru, 2b: for 2 belady> \n");
+        exit(0);
+    }
+
 
     for (int i =0; i < 19; i++)
         signal(i, handle_signal);
