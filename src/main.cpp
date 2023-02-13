@@ -1,13 +1,15 @@
 #pragma once
 
 #include <iostream>
-#include<unordered_map>
+#include<map>
 #include <run.h>
 #include <signal.h>
+#include <chrono>
 
 using namespace std;
+using namespace std::chrono;
 
-unordered_map<string, int> tracefiles = {
+map<string, int> tracefiles = {
     {"bzip2.log_l1misstrace", 2},
     {"gcc.log_l1misstrace", 2},
     {"gromacs.log_l1misstrace", 1},
@@ -32,26 +34,32 @@ void handle_signal(int s) {
 
 int main(int argc, char* argv[]) {
 
-    // check for correct number of input arguments
-    // if (argc != 3) {
-    //     cout << "Format: ./bin/simulator <trace file prefix> <num files>" << endl;
-    //     exit(1);
-    // }
-
     for (int i =0; i < 19; i++)
         signal(i, handle_signal);
 
     for(auto kvtraces: tracefiles){
-
-        // int numtraces = atoi(argv[2]);
         int numtraces = kvtraces.second;
-
-        printf("Starting simulator with inclusive policy\n");
-
+        time_point<system_clock> sTime, eTime;
+        sTime = system_clock::now(); 
         start_simulator((char*)("./traces/" + kvtraces.first).c_str(), numtraces, INCLUSIVE);
-        // start_simulator(argv[1], numtraces, INCLUSIVE);
-        // start_simulator(argv[1], numtraces, NINE);
-        // start_simulator(argv[1], numtraces, EXCLUSIVE);
+        eTime = system_clock::now();
+
+        duration<double> timeTaken = eTime-sTime;
+        printf("Elapsed Time: %.3f secs\n", timeTaken.count()); 
+
+        sTime = system_clock::now(); 
+        start_simulator((char*)("./traces/" + kvtraces.first).c_str(), numtraces, EXCLUSIVE);
+        eTime = system_clock::now();
+        
+        timeTaken = eTime-sTime;
+        printf("Elapsed Time: %.3f secs\n", timeTaken.count()); 
+
+        sTime = system_clock::now();         
+        start_simulator((char*)("./traces/" + kvtraces.first).c_str(), numtraces, NINE);
+        eTime = system_clock::now();
+
+        timeTaken = eTime-sTime;
+        printf("Elapsed Time: %.3f secs\n", timeTaken.count()); 
     }
     return 1;  
 }

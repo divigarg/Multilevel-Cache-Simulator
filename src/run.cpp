@@ -15,8 +15,18 @@ Cache *l3_cache;
 
 FILE *_debug;
 
+map<policy, string> policyString = {{INCLUSIVE, "Inclusive"}, {EXCLUSIVE, "Exclusive"}, {NINE, "Nine"}};
 
 void start_simulator(char* filename, int numtraces, policy c_policy) {
+    char* tmpfilename = (char *) malloc(strlen(filename));
+    strcpy(tmpfilename, filename);
+    char *token = strtok(tmpfilename, "/");
+    token = strtok(NULL, "/");
+    token = strtok(NULL, "/");
+    token = strtok(token, ".");
+    
+    printf("%s: %s Policy\n", token, policyString[c_policy].c_str());
+
     _debug = fopen("logs/debug.log", "w");
 
     fprintf(_debug,"top of %s\n", __func__);
@@ -139,11 +149,14 @@ void process_entry(struct entry *_entry) {
             l3_cache->invalidate(l3_block);
                 
             l2_cache->copy(l2_block); // L2 block is not valid here -> Wont be a problem though
+            l2_cache->update_repl_params(l2_block->index, l2_block->way);
+            
             if (l2_cache->victim != NULL){
                 _victim = convert_l2_to_l3(l2_cache->victim);
                 // l3_block->valid = true;
-                l3_cache->copy(l3_block);
-
+                //change made from l3_block to _victim since the victim needs to be added to l3
+                l3_cache->copy(_victim);
+                l3_cache->update_repl_params(_victim->index, _victim->way);
             }
 
         }
@@ -175,13 +188,14 @@ void process_entry(struct entry *_entry) {
 
             l3_cache->update_repl_params(l3_block->index, l3_block->way);
             l2_cache->copy(l2_block);
+            l2_cache->update_repl_params(l2_block->index, l2_block->way);
             // If a block gets evicted from L2 -> Put it in L3 cache
-            if (l2_cache->victim != NULL){
-                _victim = convert_l2_to_l3(l2_cache->victim);
-                // l3_block->valid = true;
-                l3_cache->copy(l3_block);
+            // if (l2_cache->victim != NULL){
+            //     _victim = convert_l2_to_l3(l2_cache->victim);
+            //     // l3_block->valid = true;
+            //     l3_cache->copy(l3_block);
 
-            }
+            // }
 
         }
 
@@ -201,12 +215,15 @@ void process_entry(struct entry *_entry) {
     */
     if (global_env->cache_policy == EXCLUSIVE) {
         l2_cache->copy(l2_block);
+        l2_cache->update_repl_params(l2_block->index, l2_block->way);
+
         /*
         Check if any block got replaced in L2 cache
         */
         if (l2_cache->victim != NULL) {
             _victim = convert_l2_to_l3(l2_cache->victim);
-            l3_cache->copy(l3_block);
+            l3_cache->copy(_victim);
+            l3_cache->update_repl_params(_victim->index, _victim->way);
         }
     }
 
@@ -269,12 +286,14 @@ void process_entry(struct entry *_entry) {
     */
     else {
         l3_cache->copy(l3_block);
+        l3_cache->update_repl_params(l3_block->index, l3_block->way);
 
         l2_cache->copy(l2_block);
-        if (l2_cache->victim != NULL) {
-            _victim = convert_l2_to_l3(l2_cache->victim);
-            l3_cache->copy(_victim);
-        }
+        l2_cache->update_repl_params(l2_block->index, l2_block->way);
+        // if (l2_cache->victim != NULL) {
+        //     _victim = convert_l2_to_l3(l2_cache->victim);
+        //     l3_cache->copy(_victim);
+        // }
 
     }
 

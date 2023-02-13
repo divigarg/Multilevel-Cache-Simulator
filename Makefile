@@ -13,6 +13,5 @@ bin/simulator:
 
 
 clean:
-	rm -f bin/simulator
-	rmdir bin
+	rm -rf bin
 	echo '' >  logs/debug.log

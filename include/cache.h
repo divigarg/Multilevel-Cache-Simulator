@@ -24,6 +24,8 @@ Sets: 2048
 #define L2 2
 #define L3 3
 
+extern FILE *_debug;
+
 struct cache_block {
     int index;
     unsigned long long tag;
@@ -89,7 +91,7 @@ class Cache {
 
     Cache (int w, int b_size, unsigned long c, int lvl) {
 
-        printf("%s: top \n", __func__);
+        fprintf(_debug, "%s: top \n", __func__);
         int i = 0;
         this->level = lvl;
         this->ways = w;
@@ -107,7 +109,7 @@ class Cache {
                 __func__, level, sets, ways, capacity, block_bits);
         // initialize 2d array for tags
         this->blocks = (struct cache_block**)malloc(sizeof(struct cache_block*)*sets);
-        printf("%s: 2d array pointer allocated\n", __func__);
+        fprintf(_debug, "%s: 2d array pointer allocated\n", __func__);
 
         for (i; i < sets; i++) 
             this->blocks[i] = (struct cache_block*)malloc(sizeof(struct cache_block)*ways);
