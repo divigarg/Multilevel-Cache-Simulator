@@ -40,6 +40,7 @@ int main(int argc, char* argv[]) {
     for(auto kvtraces: tracefiles){
         int numtraces = kvtraces.second;
         time_point<system_clock> sTime, eTime;
+        
         sTime = system_clock::now(); 
         start_simulator((char*)("./traces/" + kvtraces.first).c_str(), numtraces, INCLUSIVE);
         eTime = system_clock::now();

@@ -1,0 +1,126 @@
+bzip2: Inclusive Policy
+Cache: level: 2, sets: 1024, ways: 8, capacity: 524288, block_bits: 6
+Cache: level: 3, sets: 2048, ways: 16, capacity: 2097152, block_bits: 6
+L1 Misses 10657627
+L2 Misses 5398166
+L3 Misses 1446388
+Elapsed Time: 101.379 secs
+bzip2: Exclusive Policy
+Cache: level: 2, sets: 1024, ways: 8, capacity: 524288, block_bits: 6
+Cache: level: 3, sets: 2048, ways: 16, capacity: 2097152, block_bits: 6
+L1 Misses 10657627
+L2 Misses 5397576
+L3 Misses 889221
+Elapsed Time: 101.357 secs
+bzip2: Nine Policy
+Cache: level: 2, sets: 1024, ways: 8, capacity: 524288, block_bits: 6
+Cache: level: 3, sets: 2048, ways: 16, capacity: 2097152, block_bits: 6
+L1 Misses 10657627
+L2 Misses 5397576
+L3 Misses 1445846
+Elapsed Time: 95.814 secs
+gcc: Inclusive Policy
+Cache: level: 2, sets: 1024, ways: 8, capacity: 524288, block_bits: 6
+Cache: level: 3, sets: 2048, ways: 16, capacity: 2097152, block_bits: 6
+L1 Misses 14610811
+L2 Misses 3036461
+L3 Misses 1373402
+Elapsed Time: 119.327 secs
+gcc: Exclusive Policy
+Cache: level: 2, sets: 1024, ways: 8, capacity: 524288, block_bits: 6
+Cache: level: 3, sets: 2048, ways: 16, capacity: 2097152, block_bits: 6
+L1 Misses 14610811
+L2 Misses 3029809
+L3 Misses 1242824
+Elapsed Time: 117.701 secs
+gcc: Nine Policy
+Cache: level: 2, sets: 1024, ways: 8, capacity: 524288, block_bits: 6
+Cache: level: 3, sets: 2048, ways: 16, capacity: 2097152, block_bits: 6
+L1 Misses 14610811
+L2 Misses 3029809
+L3 Misses 1366248
+Elapsed Time: 113.179 secs
+gromacs: Inclusive Policy
+Cache: level: 2, sets: 1024, ways: 8, capacity: 524288, block_bits: 6
+Cache: level: 3, sets: 2048, ways: 16, capacity: 2097152, block_bits: 6
+L1 Misses 3431511
+L2 Misses 336851
+L3 Misses 170531
+Elapsed Time: 26.610 secs
+gromacs: Exclusive Policy
+Cache: level: 2, sets: 1024, ways: 8, capacity: 524288, block_bits: 6
+Cache: level: 3, sets: 2048, ways: 16, capacity: 2097152, block_bits: 6
+L1 Misses 3431511
+L2 Misses 336724
+L3 Misses 159302
+Elapsed Time: 25.662 secs
+gromacs: Nine Policy
+Cache: level: 2, sets: 1024, ways: 8, capacity: 524288, block_bits: 6
+Cache: level: 3, sets: 2048, ways: 16, capacity: 2097152, block_bits: 6
+L1 Misses 3431511
+L2 Misses 336724
+L3 Misses 170459
+Elapsed Time: 27.270 secs
+h264ref: Inclusive Policy
+Cache: level: 2, sets: 1024, ways: 8, capacity: 524288, block_bits: 6
+Cache: level: 3, sets: 2048, ways: 16, capacity: 2097152, block_bits: 6
+L1 Misses 2348573
+L2 Misses 969678
+L3 Misses 342146
+Elapsed Time: 22.240 secs
+h264ref: Exclusive Policy
+Cache: level: 2, sets: 1024, ways: 8, capacity: 524288, block_bits: 6
+Cache: level: 3, sets: 2048, ways: 16, capacity: 2097152, block_bits: 6
+L1 Misses 2348573
+L2 Misses 965624
+L3 Misses 143681
+Elapsed Time: 20.225 secs
+h264ref: Nine Policy
+Cache: level: 2, sets: 1024, ways: 8, capacity: 524288, block_bits: 6
+Cache: level: 3, sets: 2048, ways: 16, capacity: 2097152, block_bits: 6
+L1 Misses 2348573
+L2 Misses 965624
+L3 Misses 333583
+Elapsed Time: 19.553 secs
+hmmer: Inclusive Policy
+Cache: level: 2, sets: 1024, ways: 8, capacity: 524288, block_bits: 6
+Cache: level: 3, sets: 2048, ways: 16, capacity: 2097152, block_bits: 6
+L1 Misses 3509765
+L2 Misses 1743421
+L3 Misses 391226
+Elapsed Time: 32.129 secs
+hmmer: Exclusive Policy
+Cache: level: 2, sets: 1024, ways: 8, capacity: 524288, block_bits: 6
+Cache: level: 3, sets: 2048, ways: 16, capacity: 2097152, block_bits: 6
+L1 Misses 3509765
+L2 Misses 1735322
+L3 Misses 300046
+Elapsed Time: 33.232 secs
+hmmer: Nine Policy
+Cache: level: 2, sets: 1024, ways: 8, capacity: 524288, block_bits: 6
+Cache: level: 3, sets: 2048, ways: 16, capacity: 2097152, block_bits: 6
+L1 Misses 3509765
+L2 Misses 1735322
+L3 Misses 376344
+Elapsed Time: 34.594 secs
+sphinx3: Inclusive Policy
+Cache: level: 2, sets: 1024, ways: 8, capacity: 524288, block_bits: 6
+Cache: level: 3, sets: 2048, ways: 16, capacity: 2097152, block_bits: 6
+L1 Misses 10753447
+L2 Misses 8820349
+L3 Misses 8207362
+Elapsed Time: 153.776 secs
+sphinx3: Exclusive Policy
+Cache: level: 2, sets: 1024, ways: 8, capacity: 524288, block_bits: 6
+Cache: level: 3, sets: 2048, ways: 16, capacity: 2097152, block_bits: 6
+L1 Misses 10753447
+L2 Misses 8815130
+L3 Misses 7220776
+Elapsed Time: 129.557 secs
+sphinx3: Nine Policy
+Cache: level: 2, sets: 1024, ways: 8, capacity: 524288, block_bits: 6
+Cache: level: 3, sets: 2048, ways: 16, capacity: 2097152, block_bits: 6
+L1 Misses 10753447
+L2 Misses 8815130
+L3 Misses 8205144
+Elapsed Time: 124.185 secs

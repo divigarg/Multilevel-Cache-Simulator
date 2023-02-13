@@ -74,6 +74,8 @@ void init_caches() {
     l2_cache = new Cache (8, 64, 512 KB, L2);
 
     l3_cache = new Cache (16, 64, 2 MB, L3);
+    // l3_cache = new Cache (32768, 64, 2 MB, L3);
+
 }
 
 
@@ -320,5 +322,4 @@ void print_stats() {
     cout << "L1 Misses " << global_env->l1_misses << endl;
     cout << "L2 Misses " << global_env->l2_misses << endl;
     cout << "L3 Misses " << global_env->l3_misses << endl;
-    
 }
