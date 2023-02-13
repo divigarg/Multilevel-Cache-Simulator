@@ -48,13 +48,17 @@ void start_simulator(char* filename, int numtraces, policy c_policy) {
         fp = fopen(input_name, "rb");
         assert(fp != NULL);
 
+        //
+        int counter = 0;
+        //
         while (!feof(fp)) {
+            counter++;
             fread(&_entry->iord, sizeof(char), 1, fp);
             fread(&_entry->type, sizeof(char), 1, fp);
             fread(&_entry->addr, sizeof(unsigned long long), 1, fp);
             fread(&_entry->pc, sizeof(unsigned), 1, fp);
 
-            fprintf(_debug,"%s: Processing addr: %p type: %c\n",__func__, _entry->addr, _entry->type);
+            fprintf(_debug,"%s: counter : %d, Processing addr: %p type: %c\n",__func__, counter, _entry->addr, _entry->type);
             // fflush(_debug);
             process_entry(_entry);
             // Process the entry

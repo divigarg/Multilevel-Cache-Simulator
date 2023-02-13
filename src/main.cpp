@@ -48,19 +48,19 @@ int main(int argc, char* argv[]) {
         duration<double> timeTaken = eTime-sTime;
         printf("Elapsed Time: %.3f secs\n", timeTaken.count()); 
 
-        sTime = system_clock::now(); 
-        start_simulator((char*)("./traces/" + kvtraces.first).c_str(), numtraces, EXCLUSIVE);
-        eTime = system_clock::now();
+        // sTime = system_clock::now(); 
+        // start_simulator((char*)("./traces/" + kvtraces.first).c_str(), numtraces, EXCLUSIVE);
+        // eTime = system_clock::now();
         
-        timeTaken = eTime-sTime;
-        printf("Elapsed Time: %.3f secs\n", timeTaken.count()); 
+        // timeTaken = eTime-sTime;
+        // printf("Elapsed Time: %.3f secs\n", timeTaken.count()); 
 
-        sTime = system_clock::now();         
-        start_simulator((char*)("./traces/" + kvtraces.first).c_str(), numtraces, NINE);
-        eTime = system_clock::now();
+        // sTime = system_clock::now();         
+        // start_simulator((char*)("./traces/" + kvtraces.first).c_str(), numtraces, NINE);
+        // eTime = system_clock::now();
 
-        timeTaken = eTime-sTime;
-        printf("Elapsed Time: %.3f secs\n", timeTaken.count()); 
+        // timeTaken = eTime-sTime;
+        // printf("Elapsed Time: %.3f secs\n", timeTaken.count()); 
     }
     return 1;  
 }

@@ -102,14 +102,16 @@ int Cache::invoke_repl_policy(int index) {
 
 void Cache::update_repl_params(int index, int way) {
 
-    // fprintf(_debug,"%s: top\n", __func__);
+    fprintf(_debug,"%s: top index : %d, way : %d\n", __func__, index, way);
+    fprintf(_debug, "%s: lists size: %d\n", __func__, sizeof(lists)/sizeof(lists[0]));
+
     struct list_item *_item = lists[index].find_item(way);
-    // fprintf(_debug,"%s: after find_item func\n", __func__);
+    fprintf(_debug,"%s: after find_item func\n", __func__);
     if (is_null(_item)) {
-        // fprintf(_debug,"%s: item not found\n", __func__);
+        fprintf(_debug,"%s: item not found\n", __func__);
         _item = new struct list_item(way);
         lists[index].add_item(_item);
-        // fprintf(_debug,"%s: item added to list\n", __func__);
+        fprintf(_debug,"%s: item added to list\n", __func__);
         return;
     }
     

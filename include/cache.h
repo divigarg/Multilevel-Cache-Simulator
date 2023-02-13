@@ -102,18 +102,20 @@ class Cache {
 
         this->index_bits = get_log_2(this->sets);
 
-        this->tag_bits = get_tag_bits(this->block_bits, this->index_bits);
         this->block_bits = get_log_2(this->block_size);
+        this->tag_bits = get_tag_bits(this->block_bits, this->index_bits);
         this->mask = this->sets - 1; 
-        printf("%s: level: %d, sets: %d, ways: %d, capacity: %ld, block_bits: %d\n",\
-                __func__, level, sets, ways, capacity, block_bits);
+        printf("%s: level: %d, sets: %d, ways: %d, capacity: %ld, block_bits: %d,tag_bits: %d, index_bits: %d\n",\
+                __func__, level, sets, ways, capacity, block_bits, tag_bits, index_bits);
         // initialize 2d array for tags
         this->blocks = (struct cache_block**)malloc(sizeof(struct cache_block*)*sets);
         fprintf(_debug, "%s: 2d array pointer allocated\n", __func__);
 
         for (i; i < sets; i++) 
             this->blocks[i] = (struct cache_block*)malloc(sizeof(struct cache_block)*ways);
-    
+        
+        fprintf(_debug, "%s: sizeof blocks array: (%d, %d), ways: %d\n", __func__, sizeof(this->blocks)/sizeof(struct cache_block*), sizeof(this->blocks[0])/sizeof(struct cache_block), ways);
+
         this->lists = (struct access_list*)malloc(sizeof(struct access_list)*sets);
         
     };

@@ -1,0 +1,7 @@
+bzip2: Inclusive Policy
+Cache: level: 2, sets: 1024, ways: 8, capacity: 524288, block_bits: 6
+Cache: level: 3, sets: 1, ways: 32768, capacity: 2097152, block_bits: 6
+Received signal 11
+L1 Misses 1
+L2 Misses 1
+L3 Misses 1
