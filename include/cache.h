@@ -83,9 +83,9 @@ class Cache {
     std::map<int, std::vector<int>> min_set;
 
     void lookup(struct cache_block*);
-    void copy(struct cache_block*);
+    void copy(struct cache_block*, int = 0);
     void invalidate(struct cache_block*);
-    int  invoke_repl_policy(int index);
+    int  invoke_repl_policy(int index, unsigned long long, int);
     void update_repl_params(int index, int way);
     struct cache_block* get_block(unsigned long long);
     int get_target_way(int index);

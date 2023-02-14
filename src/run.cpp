@@ -50,27 +50,29 @@ void start_simulator(char* filename, int numtraces, policy c_policy) {
     //preprocessing in belady
     if(partNo == 2 && replAlgo == 'b'){
         char input_name_b[256];
+        int counter = 0;
         for (int k=0; k<numtraces; k++) {
             sprintf(input_name_b, "%s_%d", filename, k);
-            fprintf(_debug,"belady preprocess: inputname: %s\n", input_name);
+            fprintf(_debug,"belady preprocess: inputname: %s\n", input_name_b);
             fpbelady = fopen(input_name_b, "rb");
             assert(fpbelady != NULL);
 
-            int counter = 0;
             while (!feof(fpbelady)) {
-                counter++;
                 fread(&_entry->iord, sizeof(char), 1, fpbelady);
                 fread(&_entry->type, sizeof(char), 1, fpbelady);
                 fread(&_entry->addr, sizeof(unsigned long long), 1, fpbelady);
                 fread(&_entry->pc, sizeof(unsigned), 1, fpbelady);
-
-                l3_cache->preprocess_belady(_entry, counter-1); 
+                if(_entry->type){
+                    l3_cache->preprocess_belady(_entry, counter); 
+                    counter++;
+                }
             }
             fclose(fpbelady);
             fprintf(_debug,"Done belady processing file %d!\n", k);
         }
     }
 
+    int tmpcounter = 0;
     for (int k=0; k<numtraces; k++) {
         sprintf(input_name, "%s_%d", filename, k);
         fprintf(_debug,"inputname: %s\n", input_name);
@@ -89,7 +91,9 @@ void start_simulator(char* filename, int numtraces, policy c_policy) {
 
             fprintf(_debug,"%s: counter : %d, Processing addr: %p type: %c\n",__func__, counter, _entry->addr, _entry->type);
             // fflush(_debug);
-            process_entry(_entry);
+            process_entry(_entry, tmpcounter);
+            if(_entry->type) tmpcounter++;
+            fprintf(_debug,"%s: counter: %d, tmpcounter : %d\n",__func__, counter, tmpcounter);
             // Process the entry
         }
         fclose(fp);
@@ -129,7 +133,7 @@ struct cache_block* convert_l3_to_l2(struct cache_block *_l3b) {
 
 }
 
-void process_entry(struct entry *_entry) {
+void process_entry(struct entry *_entry, int counter) {
     
     /*
         Process the entry based on memory hierarchy defined
@@ -270,7 +274,8 @@ void process_entry(struct entry *_entry) {
                 l3_cache->l3_unique_blocks.insert(l3_block->tag);
                 global_env->l3_cold_misses++;
             }
-        l3_cache->copy(l3_block);
+        fprintf(_debug, "%s: belady l3 copy counter: %d\n", __func__, counter);
+        l3_cache->copy(l3_block, counter);
         fprintf(_debug,"%s: after copying block with index = %d, tag = %lld and valid = %d to L3 cache\n",
                 __func__, l3_block->index, l3_block->tag, l3_block->valid);
         l3_cache->update_repl_params(l3_block->index, l3_block->way);

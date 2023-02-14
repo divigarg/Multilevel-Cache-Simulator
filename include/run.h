@@ -47,6 +47,6 @@ struct entry {
 };
 
 void start_simulator(char*, int, policy);
-void process_entry(struct entry*);
+void process_entry(struct entry*, int counter);
 void print_stats();
 void init_caches();

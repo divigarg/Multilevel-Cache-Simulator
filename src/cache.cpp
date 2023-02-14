@@ -81,12 +81,31 @@ void Cache::invalidate(struct cache_block *_block) {
     Finds the best candidate for eviction and invalidates it
     Returns: way no of block which has been freed
 */
-int Cache::invoke_repl_policy(int index) {
+int Cache::invoke_repl_policy(int index, unsigned long long tag, int counter) {
     // it should set the victim cache block
     // Victim will be the tail of list
     if(partNo == 2 && replAlgo == 'b' && this->level == 3){
+        fprintf(_debug, "%s: inside invoke belady with counter: %d\n", __func__, counter);
         //for belady replacement
-        
+        int max_dist = 0, evict_block = 0;
+        for(int i = 0; i < ways; i++){
+            auto block = blocks[0][i];
+            while(min_set[block.tag].size() && (counter >= min_set[block.tag].front())){
+                min_set[block.tag].erase(min_set[block.tag].begin());
+            }
+            if(min_set[block.tag].empty()){
+                evict_block = i;
+                break;
+            }
+            if(max_dist < min_set[block.tag].front() - counter){
+                max_dist = min_set[block.tag].front() - counter;
+                evict_block = i;
+            }
+        }
+        struct cache_block _tmp;
+        _tmp = blocks[0][evict_block];
+        victim = new struct cache_block(_tmp.index, _tmp.way, _tmp.tag);
+        return evict_block;
     }
     else{
         struct cache_block _tmp;
@@ -108,8 +127,10 @@ int Cache::invoke_repl_policy(int index) {
 
 //will not be used in belady;
 void Cache::update_repl_params(int index, int way) {
-    if(partNo == 2 && replAlgo == 'b' && this->level == 3) return;
-
+    if(partNo == 2 && replAlgo == 'b' && this->level == 3){
+        fprintf(_debug, "%s: belady update_repl_params\n", __func__);
+        return;
+    }
 
     fprintf(_debug,"%s: top index : %d, way : %d\n", __func__, index, way);
 
@@ -129,14 +150,17 @@ void Cache::update_repl_params(int index, int way) {
 
 }
 
-void Cache::copy(struct cache_block *_block) {
+void Cache::copy(struct cache_block *_block, int counter) {
+    if(this->level == 3 && partNo == 2 && replAlgo == 'b') 
+        fprintf(_debug, "%s: into copy belady counter: %d\n", __func__, counter);
 
     _block->way = get_target_way(_block->index);
     fprintf(_debug, "%s: got target way %d\n", __func__, _block->way);
 
     if (_block->way < 0) {
-        _block->way = invoke_repl_policy(_block->index);
-        fprintf(_debug, "%s: got target replaced way %d\n", __func__, _block->way);
+        _block->way = invoke_repl_policy(_block->index, _block->tag, counter);
+        // if(this->level == 3 && partNo == 2 && replAlgo == 'b') 
+            fprintf(_debug, "%s: got target replaced way %d, counter: %d\n", __func__, _block->way, counter);
 
     }
 
@@ -158,7 +182,7 @@ int Cache::get_target_way(int index) {
 void Cache::preprocess_belady(struct entry *traceEntry, int index) {
     int address = traceEntry->addr;
     address = address >> block_bits;
-    if (traceEntry->type) min_set[address].emplace_back(index);
+    min_set[address].emplace_back(index);
 }
 
 bool lookup_l1(struct entry *_entry) {
