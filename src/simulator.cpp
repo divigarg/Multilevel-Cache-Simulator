@@ -222,9 +222,9 @@ void simulator::process_entry(struct entry *_entry) {
     //     cold_and_capacity_misses++;
     
     if(fully_assoc)
-        if(miss_already.find(_entry->addr) == miss_already.end()){
+        if(miss_already.find(_entry->addr >> l3_cache->block_bits) == miss_already.end()){
             cold_misses++;
-            miss_already.insert(_entry->addr);
+            miss_already.insert(_entry->addr >> l3_cache->block_bits);
         }
     
     // Handle L3 miss

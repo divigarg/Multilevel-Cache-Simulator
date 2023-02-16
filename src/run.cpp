@@ -85,10 +85,11 @@ void run(struct args *_args) {
     pthread_join(exclusive_t, NULL);
     pthread_join(nine_t, NULL);
 
+    free(_exc_args);
+    free(_nine_args);
+    
 exit_run:
     pthread_join(inclusive_t, NULL);
     free(_inc_args);
-    free(_exc_args);
-    free(_nine_args);
     pthread_mutex_destroy(&_lock);    
 }
