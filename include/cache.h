@@ -85,7 +85,7 @@ class Cache {
     void invalidate(struct cache_block*);
     int  invoke_repl_policy(int index);
     void update_repl_params(int index, int way);
-    struct cache_block* get_block(unsigned long long);
+    void get_block(unsigned long long, struct cache_block*);
     int get_target_way(int index);
     unsigned long long get_addr(struct cache_block*);
 
@@ -105,17 +105,21 @@ class Cache {
         this->tag_bits = get_tag_bits(this->block_bits, this->index_bits);
         this->block_bits = get_log_2(this->block_size);
         this->mask = this->sets - 1; 
-        printf("%s: level: %d, sets: %d, ways: %d, capacity: %ld, block_bits: %d\n",\
+        // printf("%s: level: %d, sets: %d, ways: %d, capacity: %ld, block_bits: %d\n",\
                 __func__, level, sets, ways, capacity, block_bits);
         // initialize 2d array for tags
         this->blocks = (struct cache_block**)malloc(sizeof(struct cache_block*)*sets);
-        fprintf(_debug, "%s: 2d array pointer allocated\n", __func__);
+        // fprintf(_debug, "%s: 2d array pointer allocated\n", __func__);
 
         for (i; i < sets; i++) 
             this->blocks[i] = (struct cache_block*)malloc(sizeof(struct cache_block)*ways);
     
         this->lists = (struct access_list*)malloc(sizeof(struct access_list)*sets);
         
+        for (int j = 0; j < sets; j++)
+            this->lists[j].head = NULL;
+            
+        // fprintf(_debug, "%s: list struct head null : %d\n", __func__, this->lists[0].head == NULL);
     };
       
 };

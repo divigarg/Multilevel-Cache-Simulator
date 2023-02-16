@@ -2,16 +2,20 @@
 
 #include <replacement.h>
 #include <unistd.h>
+#include <run.h>
 
 extern FILE *_debug;
 
 void access_list::add_item(struct list_item* _item) {
-    if (head == NULL) {
-        head = _item;
-        head->next = head;
-        head->prev = head;
+    if (is_null(this->head)) {
+        // fprintf(_debug, "%s head is null for the way %d\n", __func__, _item->way);
+        this->head = _item;
+        this->head->next = this->head;
+        this->head->prev = this->head;
         return;
     }
+
+    // fprintf(_debug, "%s: head addr: %p\n", __func__, this->head);
 
     _item->next = head;
     _item->prev = head->prev;
@@ -30,7 +34,8 @@ struct list_item* access_list::find_item(int _way) {
     // fprintf(_debug,"%s: Top. looking for way %d\n", __func__, _way);
 
     struct list_item *tmp = head;
-    if (tmp == NULL)
+    // fprintf(_debug, "%s: addr head=%p,way=%d\n", __func__, head, _way);
+    if (is_null(tmp))
         return NULL;
     
     // fprintf(_debug,"%s: tmp not null\n", __func__);

@@ -1,66 +1,84 @@
 #pragma once
 
 #include <iostream>
-#include<map>
-#include <run.h>
+#include <map>
+#include <simulator.h>
 #include <signal.h>
-#include <chrono>
+#include <string>
+#include <typeinfo>
+
+#include <argparse/argparse.hpp>
 
 using namespace std;
 using namespace std::chrono;
 
-map<string, int> tracefiles = {
-    {"bzip2.log_l1misstrace", 2},
-    {"gcc.log_l1misstrace", 2},
-    {"gromacs.log_l1misstrace", 1},
-    {"h264ref.log_l1misstrace", 1},
-    {"hmmer.log_l1misstrace", 1},
-    {"sphinx3.log_l1misstrace", 2},    
-};
 
-extern FILE *_debug;
-extern struct env *global_env;
+FILE *_debug;
 
 void handle_signal(int s) {
     printf("Received signal %d\n", s);
-
-    cout << "L1 Misses " << global_env->l1_misses << endl;
-    cout << "L2 Misses " << global_env->l2_misses << endl;
-    cout << "L3 Misses " << global_env->l3_misses << endl;
 
     fflush(_debug);
     exit(1);
 }
 
+
 int main(int argc, char* argv[]) {
+
+    struct args *_args = new struct args();
+
+    argparse::ArgumentParser program("./bin/simulator");
 
     for (int i =0; i < 19; i++)
         signal(i, handle_signal);
 
-    for(auto kvtraces: tracefiles){
-        int numtraces = kvtraces.second;
-        time_point<system_clock> sTime, eTime;
-        
-        sTime = system_clock::now(); 
-        start_simulator((char*)("./traces/" + kvtraces.first).c_str(), numtraces, INCLUSIVE);
-        eTime = system_clock::now();
+    program.add_argument("--file")
+        .help("run simulator on given trace file");
 
-        duration<double> timeTaken = eTime-sTime;
-        printf("Elapsed Time: %.3f secs\n", timeTaken.count()); 
+    program.add_argument("num_traces")
+        .help("number of parts of given trace file")
+        .scan<'i', int>();
 
-        sTime = system_clock::now(); 
-        start_simulator((char*)("./traces/" + kvtraces.first).c_str(), numtraces, EXCLUSIVE);
-        eTime = system_clock::now();
-        
-        timeTaken = eTime-sTime;
-        printf("Elapsed Time: %.3f secs\n", timeTaken.count()); 
+    
+    program.add_argument("--max_assoc")
+        .help("use fully associative cache")
+        .default_value(false)
+        .implicit_value(true);
+    
+    program.add_argument("--output")
+        .required()
+        .help("output log file");
 
-        sTime = system_clock::now();         
-        start_simulator((char*)("./traces/" + kvtraces.first).c_str(), numtraces, NINE);
-        eTime = system_clock::now();
 
-        timeTaken = eTime-sTime;
-        printf("Elapsed Time: %.3f secs\n", timeTaken.count()); 
+    try {
+        program.parse_args(argc, argv);
     }
+    catch (const std::runtime_error &err) {
+        std::cerr << err.what() << std::endl;
+        std::cerr << program;
+        std::exit(1);
+    }
+
+
+    _args->filename = (char*)(program.get<std::string>("--file").c_str());
+
+
+    _args->num_traces = program.get<int>("num_traces");
+
+    if (program["--max_assoc"] == true) {
+        _args->full_assoc = true;
+    }
+
+    _args->log_file = (char*)(program.get<std::string>("--output").c_str());
+
+
+    _debug = fopen(_args->log_file, "w");
+
+    printf("filename: %s, num_traces: %d, log_file: %s\n", \
+            _args->filename, _args->num_traces, _args->log_file);
+        
+    run(_args);
+
+    free(_args);
     return 1;  
 }

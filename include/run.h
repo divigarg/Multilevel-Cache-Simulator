@@ -11,26 +11,42 @@
     throw std::runtime_error(buf); \
 })
 
-#define is_null(addr) (addr == NULL)
+#define is_null(addr) (addr == 0)
 
 typedef char policy;
 
-struct env {
+// struct env {
     
-    std::string        trace;
+//     std::string        trace;
 
-    policy        cache_policy;
+//     policy        cache_policy;
 
-    unsigned long       l1_misses;
-    unsigned long       l2_misses;
-    unsigned long       l3_misses;
+//     unsigned long       l1_misses;
+//     unsigned long       l2_misses;
+//     unsigned long       l3_misses;
 
-    env(const std::string &t, policy p) {
-        trace = t;
-        cache_policy = p;
-        l1_misses = 0;
-        l2_misses = 0;
-        l3_misses = 0;
+//     env(const std::string &t, policy p) {
+//         trace = t;
+//         cache_policy = p;
+//         l1_misses = 0;
+//         l2_misses = 0;
+//         l3_misses = 0;
+//     };
+
+// };
+
+struct args {
+    char* filename;
+    int num_traces;
+    bool full_assoc;
+    char* log_file;
+    policy _policy;
+    
+    args() {
+        filename = {0};
+        num_traces = 0;
+        full_assoc = false;
+        log_file = {0};
     };
 
 };
@@ -44,7 +60,4 @@ struct entry {
 
 };
 
-void start_simulator(char*, int, policy);
-void process_entry(struct entry*);
-void print_stats();
-void init_caches();
+void run(struct args*);

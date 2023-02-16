@@ -44,14 +44,12 @@ unsigned long long Cache::get_addr(struct cache_block *_block) {
 }
 
 
-struct cache_block* Cache::get_block(unsigned long long addr) {
-
-    struct cache_block *_block = new struct cache_block;
+void Cache::get_block(unsigned long long addr,
+            struct cache_block *dst) {
 
     addr = addr >> block_bits;
-    _block->index = addr & mask;
-    _block->tag = addr >> index_bits;
-    return _block;
+    dst->index = addr & mask;
+    dst->tag = addr >> index_bits;
 
 }
 
@@ -84,17 +82,21 @@ int Cache::invoke_repl_policy(int index) {
     // it should set the victim cache block
     // Victim will be the tail of list
     struct cache_block _tmp;
-    fprintf(_debug, "%s: before _victim index = %d, head = %p\n", __func__, index, lists[index].head);
 
     struct list_item *_victim = lists[index].head->prev;
+    // fprintf(_debug,"%s: after head->prev %p\n", __func__, _victim);
 
     if (is_null(_victim)) {
         throw_error("error in replacment list of index %d\n", index);
     }
-    fprintf(_debug, "%s: before _tmp\n", __func__);
+    // fprintf(_debug,"%s: before assign _tmp: index: %d, way: %d\n", __func__, index, _victim->way);
+
     _tmp = blocks[index][_victim->way];
+
+    
     // invalidate(&blocks[index][_victim->way]);
     victim = new struct cache_block(_tmp.index, _tmp.way, _tmp.tag);
+    // fprintf(_debug,"%s: after assign victim\n", __func__);
     
     return _victim->way;
 }
@@ -107,7 +109,9 @@ void Cache::update_repl_params(int index, int way) {
     // fprintf(_debug,"%s: after find_item func\n", __func__);
     if (is_null(_item)) {
         // fprintf(_debug,"%s: item not found\n", __func__);
-        _item = new struct list_item(way);
+        _item = (struct list_item*)malloc(sizeof(struct list_item));
+        // fprintf(_debug, "%s:_item addr=%p\n",__func__, _item);
+        _item->way = way;
         lists[index].add_item(_item);
         // fprintf(_debug,"%s: item added to list\n", __func__);
         return;
@@ -122,14 +126,15 @@ void Cache::update_repl_params(int index, int way) {
 void Cache::copy(struct cache_block *_block) {
 
     _block->way = get_target_way(_block->index);
-    fprintf(_debug, "%s: got target way %d\n", __func__, _block->way);
+
+    // fprintf(_debug, "%s: got target way %d\n", __func__, _block->way);
 
     if (_block->way < 0) {
         _block->way = invoke_repl_policy(_block->index);
-        fprintf(_debug, "%s: got target replaced way %d\n", __func__, _block->way);
 
     }
 
+    // fprintf(_debug, "%s: before copying content\n", __func__);
     _block->valid = 1; // to be sure
     blocks[_block->index][_block->way] = *_block;
 }
