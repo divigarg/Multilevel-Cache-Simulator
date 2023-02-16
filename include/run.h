@@ -4,6 +4,9 @@
 #define EXCLUSIVE 'e'
 #define NINE      'n'
 
+#define LOCK    pthread_mutex_lock(&_lock);
+#define UNLOCK  pthread_mutex_unlock(&_lock);
+
 #define throw_error(err_msg, func)    \
 ({                               \
     char buf[512];                \
@@ -40,6 +43,7 @@ struct args {
     int num_traces;
     bool full_assoc;
     char* log_file;
+    bool belady;
     policy _policy;
     
     args() {
@@ -47,6 +51,7 @@ struct args {
         num_traces = 0;
         full_assoc = false;
         log_file = {0};
+        belady = false;
     };
 
 };
@@ -58,6 +63,7 @@ struct entry {
     unsigned long long addr;
     unsigned pc;
 
+    int counter;
 };
 
 void run(struct args*);

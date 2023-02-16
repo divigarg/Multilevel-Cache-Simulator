@@ -78,7 +78,39 @@ void Cache::invalidate(struct cache_block *_block) {
     Finds the best candidate for eviction and invalidates it
     Returns: way no of block which has been freed
 */
-int Cache::invoke_repl_policy(int index) {
+int Cache::invoke_repl_policy(int index, int counter) {
+    //pass in the _entry->counter
+    if(repl_policy == 'b'){
+        //implement belady replacement
+        //this will be in cache L3 only
+        int max_distance = -1;
+        int _victim_way = -1;
+        for(int curr_way = 0; curr_way < ways; curr_way++){
+            auto &tmpDataPair = prebeladyData[blocks[index][curr_way].tag];
+            int &curr_idx = tmpDataPair.first;
+            auto &tmpData = tmpDataPair.second;
+            while(curr_idx != tmpData.size() && tmpData[curr_idx] < counter) curr_idx++;
+
+            if(curr_idx == tmpData.size()){
+                _victim_way = curr_way;
+                goto redirect_way;
+            }
+
+            if(max_distance < tmpData[curr_idx] - counter){
+                max_distance = tmpData[curr_idx] - counter;
+                _victim_way = curr_way;
+            }
+            
+        }
+    redirect_way:
+        if(_victim_way == -1){
+            throw_error("error in belady replacement %d\n", index);
+        }
+        struct cache_block _tmp = blocks[index][_victim_way];
+        victim = new struct cache_block(_tmp.index, _tmp.way, _tmp.tag);
+
+        return _victim_way;
+    }
     // it should set the victim cache block
     // Victim will be the tail of list
     struct cache_block _tmp;
@@ -123,14 +155,14 @@ void Cache::update_repl_params(int index, int way) {
 
 }
 
-void Cache::copy(struct cache_block *_block) {
+void Cache::copy(struct cache_block *_block, int counter) {
 
     _block->way = get_target_way(_block->index);
 
     // fprintf(_debug, "%s: got target way %d\n", __func__, _block->way);
 
     if (_block->way < 0) {
-        _block->way = invoke_repl_policy(_block->index);
+        _block->way = invoke_repl_policy(_block->index, counter);
 
     }
 

@@ -1,7 +1,9 @@
 #pragma once
 
+#include <map>
 #include <run.h>
 #include <replacement.h>
+using namespace std;
 /*
         Cache Hierarchy Reference
 ----------------------L2-------------------
@@ -68,7 +70,9 @@ class Cache {
     int block_bits;
     int mask;   // Mask to get Index from address
     policy repl_policy;
-    
+
+    map<unsigned long long, pair<int, vector<int>>> prebeladyData;
+
     /*
         constant fields section ends
     */
@@ -81,15 +85,15 @@ class Cache {
     struct access_list         *lists;
 
     void lookup(struct cache_block*);
-    void copy(struct cache_block*);
+    void copy(struct cache_block*, int counter = 0);
     void invalidate(struct cache_block*);
-    int  invoke_repl_policy(int index);
+    int  invoke_repl_policy(int index, int counter);
     void update_repl_params(int index, int way);
     void get_block(unsigned long long, struct cache_block*);
     int get_target_way(int index);
     unsigned long long get_addr(struct cache_block*);
 
-    Cache (int w, int b_size, unsigned long c, int lvl) {
+    Cache (int w, int b_size, unsigned long c, int lvl, char rpl_policy = 'l') {
 
         fprintf(_debug, "%s: top \n", __func__);
         int i = 0;
@@ -105,6 +109,9 @@ class Cache {
         this->tag_bits = get_tag_bits(this->block_bits, this->index_bits);
         this->block_bits = get_log_2(this->block_size);
         this->mask = this->sets - 1; 
+
+        this->repl_policy = rpl_policy;
+
         // printf("%s: level: %d, sets: %d, ways: %d, capacity: %ld, block_bits: %d\n",\
                 __func__, level, sets, ways, capacity, block_bits);
         // initialize 2d array for tags
@@ -120,6 +127,7 @@ class Cache {
             this->lists[j].head = NULL;
             
         // fprintf(_debug, "%s: list struct head null : %d\n", __func__, this->lists[0].head == NULL);
+        this->prebeladyData.clear();
     };
       
 };

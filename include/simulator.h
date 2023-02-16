@@ -1,4 +1,3 @@
-#pragma once 
 
 #include <bits/stdc++.h>
 #include <cache.h>
@@ -15,6 +14,7 @@
     l2_cache->get_block(addr, _l2b); \
 })
 
+using namespace std;
 
 class simulator {
 
@@ -31,18 +31,20 @@ class simulator {
 
     unsigned long cold_misses;
     unsigned long cold_and_capacity_misses;
-
+    
+    set<unsigned long long> miss_already;
     
     policy      cache_policy;
     bool        fully_assoc;
 
     public:
-    void start_simulator(const char *filename, int numtraces);
-    void init_caches(bool);
+    void start_simulator(const char *filename, int numtraces, bool belady);
+    void init_caches(bool, bool);
     void process_entry(struct entry*);
     void print_stats();
     void clean_memory();
-    void reintialize();
+    void preprocess_belady(const char *filename, int numtraces);
+
     simulator(policy _policy, bool assc) {
 
         this->cache_policy = _policy;
@@ -55,6 +57,10 @@ class simulator {
         this->l1_misses = 0;
         this->l2_misses = 0;
         this->l3_misses = 0;
-    
+
+
+        this->cold_and_capacity_misses = 0;
+        this->cold_misses = 0;
+        this->miss_already.clear();
     };
 };

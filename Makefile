@@ -1,4 +1,4 @@
-G++ := g++
+G++ := g++ -O3
 INCLUDE := ./include/
 SRC_DIR	:= ./src
 
@@ -8,8 +8,7 @@ all: bin/simulator
 
 bin/simulator:
 	mkdir bin
-	$(G++) -I $(INCLUDE) -o $@ $(SRCS)
-
+	$(G++) -I $(INCLUDE) -pthread -o $@ $(SRCS)
 
 
 clean:

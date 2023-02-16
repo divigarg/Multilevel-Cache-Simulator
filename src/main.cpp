@@ -28,11 +28,12 @@ int main(int argc, char* argv[]) {
     struct args *_args = new struct args();
 
     argparse::ArgumentParser program("./bin/simulator");
-
+    // if(argc == 1) cout << "Format: ./bin/simulator <./traces/---.log_l1misstrace> <numTraces> <./logs/debug.log> [<max_alloc>] [<if max_alloc, belady>]" << endl;
     for (int i =0; i < 19; i++)
         signal(i, handle_signal);
 
     program.add_argument("--file")
+        .required()
         .help("run simulator on given trace file");
 
     program.add_argument("num_traces")
@@ -49,6 +50,10 @@ int main(int argc, char* argv[]) {
         .required()
         .help("output log file");
 
+    program.add_argument("--belady")
+        .help("use belady replacement policy  (requires --max_assoc flag)")
+        .default_value(false)
+        .implicit_value(true);
 
     try {
         program.parse_args(argc, argv);
@@ -70,6 +75,12 @@ int main(int argc, char* argv[]) {
     }
 
     _args->log_file = (char*)(program.get<std::string>("--output").c_str());
+
+    if(program["--belady"] == true){
+        _args->belady = true;
+    }
+    
+
 
 
     _debug = fopen(_args->log_file, "w");
