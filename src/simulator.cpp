@@ -5,11 +5,11 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-extern FILE *_debug;
+
 extern pthread_mutex_t _lock;
 
 void simulator::preprocess_belady(const char* filename, int numtraces) {
-    LOCK fprintf(_debug, "%s: processing input data for belady\n", __func__); UNLOCK
+    LOCK printf("%s: %c -> processing input data for belady\n", __func__, cache_policy); UNLOCK
     int belady_index = 0;
     
     FILE *fp;
@@ -40,22 +40,14 @@ void simulator::preprocess_belady(const char* filename, int numtraces) {
         
         fclose(fp);
     }
-    FILE *predataFile = fopen("./dump.txt", "w");
-    for(auto& kv: l3_cache->prebeladyData){
-        fprintf(predataFile, "%lld: ", kv.first);
-        for(auto idx: kv.second.second){
-            fprintf(predataFile, "%d ", idx);
-        }
-        fprintf(predataFile, "\n");
-    }
-    fclose(fp);
-    LOCK fprintf(_debug, "%s: processed input data for belady\n", __func__); UNLOCK
+
+    LOCK printf("%s: %c -> processed input data for belady\n", __func__, cache_policy); UNLOCK
 }
 
 
 void simulator::start_simulator(const char* filename, int numtraces, bool belady) {
 
-    LOCK fprintf(_debug, "%s: starting simulator\n", __func__); UNLOCK
+    LOCK printf("%s: %c -> starting simulator\n", __func__, cache_policy); UNLOCK
     char* tmpfilename = (char *) malloc(strlen(filename));
     strcpy(tmpfilename, filename);
     char *token = strtok(tmpfilename, "/");
@@ -85,9 +77,8 @@ void simulator::start_simulator(const char* filename, int numtraces, bool belady
             fread(&_entry->addr, sizeof(unsigned long long), 1, fp);
             fread(&_entry->pc, sizeof(unsigned), 1, fp);
             // LOCK
-            // fprintf(_debug,"%s: Processing addr: %p type: %c\n",__func__, _entry->addr, _entry->type);
+            // printf("%s: Processing addr: %p type: %c\n",__func__, _entry->addr, _entry->type);
             // UNLOCK;
-            // fflush(_debug);
             _entry->counter = entry_index;
             if(_entry->type) entry_index++;
             process_entry(_entry);
@@ -108,12 +99,13 @@ void simulator::init_caches(bool assoc, bool belady) {
 
     if (assoc) {
         policy rpl_policy;
-        if(belady) rpl_policy = 'b';
-        else rpl_policy = 'c';
+        if(belady) rpl_policy = BELADY;
+        else rpl_policy = LRU;
+    
         l3_cache = new Cache (32768, 64, 2 MB, L3, rpl_policy);
     }
     else l3_cache = new Cache (16, 64, 2 MB, L3);
-    // l3_cache = new Cache (32768, 64, 2 MB, L3);
+
 
 }
 
@@ -136,14 +128,10 @@ void simulator::process_entry(struct entry *_entry) {
 
     // get block for L2 lookup
     l2_cache->get_block(_entry->addr, l2_block);
-    // fprintf(_debug,"%s: after l2_block fetch - index: %d\n", __func__, l2_block->index); // clear
 
     l2_cache->lookup(l2_block);
-    // fprintf(_debug,"%s: after lookup 2, valid: %d\n", __func__, l2_block->valid);
     if (l2_block->valid) {
         l2_cache->update_repl_params(l2_block->index, l2_block->way);
-        // fprintf(_debug,"%s: L2 cache replacement list updated for index: %d\n",\
-             __func__, l2_block->index);
             
         goto clean_l2;
     }
@@ -151,11 +139,7 @@ void simulator::process_entry(struct entry *_entry) {
     l2_misses++;
 
     l3_cache->get_block(_entry->addr, l3_block);
-    // fprintf(_debug,"%s: after l3_block fetch - index: %d\n", __func__, l3_block->index); // clear
     l3_cache->lookup(l3_block);
-    // fprintf(_debug,"%s: after lookup 3\n", __func__);
-    // fprintf(_debug,"%s: L3 way: %d, L3 index: %d, L3 Tag: %lld, Valid: %d\n", \
-            __func__, l3_block->way, l3_block->index, l3_block->tag, l3_block->valid);
     
     if (l3_block->valid) {
         
@@ -189,21 +173,17 @@ void simulator::process_entry(struct entry *_entry) {
         * If a block gets evicted from L2, let it suffer :)
         */
         else if (cache_policy == INCLUSIVE) {
-            // fprintf(_debug,"%s: inside inclusive L3 hit\n", __func__);
 
             l3_cache->update_repl_params(l3_block->index, l3_block->way);
-            // fprintf(_debug,"%s: after update repl_params L3 hit\n", __func__);
             l2_cache->copy(l2_block);
             l2_cache->update_repl_params(l2_block->index, l2_block->way);
-            // fprintf(_debug,"%s: afer copying block to L2 cache\n", __func__);
         }
 
         /*
         NINE: L2-M-L3-H
         * Update the LRU replacement params for target index in L3
         * Copy the target block back to L2
-        * If a block gets evicted from L2, put it in L3
-        * If a block gets evicted from L3, I dont care :)
+        * If a block gets evicted from L2, I dont care :)
         */
         else { // NINE Policy
 
@@ -218,8 +198,6 @@ void simulator::process_entry(struct entry *_entry) {
 
     l3_misses++;
 
-    // if (fully_assoc)
-    //     cold_and_capacity_misses++;
     
     if(fully_assoc)
         if(miss_already.find(_entry->addr >> l3_cache->block_bits) == miss_already.end()){
@@ -258,47 +236,29 @@ void simulator::process_entry(struct entry *_entry) {
     * If a block get evicted from L2, relax!
     */
     else if (cache_policy == INCLUSIVE) {
-        // fprintf(_debug,"%s: inside inclusive L3 miss\n", __func__);
 
         l3_cache->copy(l3_block, _entry->counter);
-        // fprintf(_debug,"%s: after copying block with index = %d, tag = %lld and valid = %d to L3 cache\n",
-                // __func__, l3_block->index, l3_block->tag, l3_block->valid);
         l3_cache->update_repl_params(l3_block->index, l3_block->way);
         /*
             Check if any block got evicted from L3, invalidate it from L2 also
             Don't act stupid, you are being watched!
         */
         if (l3_cache->victim != NULL) {
-            // fprintf(_debug, "%s: victim index : %d, way: %d, tag: %lld\n", __func__,\
-                l3_cache->victim->index, l3_cache->victim->way, l3_cache->victim->tag);
-            
-            // fprintf(_debug,"%s: L3 victim not null\n", __func__);
+
             convert_l3_to_l2(l3_cache->victim, _victim);
-            // fprintf(_debug,"%s: conversion to L2 block done. L2 Index: %d, Tag: %lld\n",\
-                     __func__, _victim->index, _victim->tag);
-            
+   
             l2_cache->lookup(_victim);
-            // fprintf(_debug,"%s: Lookup of L2 cache done for victim block\n", __func__);
             
             if (_victim->valid) {
-                //throw_error("inclusive property violated for %lx\n", _victim->tag);
                 l2_cache->invalidate(_victim);
-                // fprintf(_debug,"%s: Invalidated L2 Index: %d, Tag: %lld,  Way: %d\n", \
-                    __func__, _victim->index, _victim->tag, _victim->way);
             }
             
             
         }
 
-        // fprintf(_debug, "%s: copy block to L2 index: %d, tag: %lld\n", __func__, l2_block->index, l2_block->tag);
         l2_cache->copy(l2_block);
-        // fprintf(_debug, "%s: update repl params L2 with index = %d, way = %d\n", __func__, l2_block->index, l2_block->way);
         l2_cache->update_repl_params(l2_block->index, l2_block->way);
-        // fprintf(_debug,"%s: after copying block with index = %d, tag = %lld and valid = %d to L2 cache\n",
-        //         __func__, l2_block->index, l2_block->tag, l2_block->valid);
         
-        // fprintf(_debug,"%s: End of function\n", __func__);
-
     }
 
     /*
@@ -314,10 +274,6 @@ void simulator::process_entry(struct entry *_entry) {
 
         l2_cache->copy(l2_block);
         l2_cache->update_repl_params(l2_block->index, l2_block->way);
-        // if (l2_cache->victim != NULL) {
-        //     _victim = convert_l2_to_l3(l2_cache->victim);
-        //     l3_cache->copy(_victim);
-        // }
 
     }
 
@@ -344,9 +300,7 @@ clean_l2:
     l2_cache->victim = NULL;
     l3_cache->victim = NULL;
   
-    // fprintf(_debug, "addr of L2_block: %p, L3_block:%p, Victim: %p\n", l2_block, l3_block, _victim);
 
-    fflush(_debug);
     return;
 }
 

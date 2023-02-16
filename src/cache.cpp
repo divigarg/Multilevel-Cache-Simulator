@@ -6,8 +6,6 @@
 
 
 
-extern FILE *_debug;
-
 int get_sets(int w, unsigned long c, int b_size) {
     unsigned long set_s = (unsigned long)(w*b_size);
     return (int)(c/set_s);
@@ -39,7 +37,7 @@ unsigned long long Cache::get_addr(struct cache_block *_block) {
     
     _addr = (_block->index) | (_block->tag << (index_bits));
     _addr = _addr << block_bits;
-    fprintf(_debug,"%s: addr : %lld\n", __func__, _addr);
+    // fprintf(_debug,"%s: addr : %lld\n", __func__, _addr);
     return _addr;
 }
 
@@ -116,19 +114,15 @@ int Cache::invoke_repl_policy(int index, int counter) {
     struct cache_block _tmp;
 
     struct list_item *_victim = lists[index].head->prev;
-    // fprintf(_debug,"%s: after head->prev %p\n", __func__, _victim);
 
     if (is_null(_victim)) {
         throw_error("error in replacment list of index %d\n", index);
     }
-    // fprintf(_debug,"%s: before assign _tmp: index: %d, way: %d\n", __func__, index, _victim->way);
 
     _tmp = blocks[index][_victim->way];
 
     
-    // invalidate(&blocks[index][_victim->way]);
     victim = new struct cache_block(_tmp.index, _tmp.way, _tmp.tag);
-    // fprintf(_debug,"%s: after assign victim\n", __func__);
     
     return _victim->way;
 }
@@ -136,22 +130,19 @@ int Cache::invoke_repl_policy(int index, int counter) {
 
 void Cache::update_repl_params(int index, int way) {
 
-    // fprintf(_debug,"%s: top\n", __func__);
+    if (repl_policy == BELADY)
+        return;
+    
     struct list_item *_item = lists[index].find_item(way);
-    // fprintf(_debug,"%s: after find_item func\n", __func__);
     if (is_null(_item)) {
-        // fprintf(_debug,"%s: item not found\n", __func__);
         _item = (struct list_item*)malloc(sizeof(struct list_item));
-        // fprintf(_debug, "%s:_item addr=%p\n",__func__, _item);
         _item->way = way;
         lists[index].add_item(_item);
-        // fprintf(_debug,"%s: item added to list\n", __func__);
         return;
     }
     
     // If way is previously accessed, move it to the head of list
     lists[index].move_to_front(_item);
-    // fprintf(_debug,"%s: item found and swapped with head\n", __func__);
 
 }
 
@@ -159,14 +150,12 @@ void Cache::copy(struct cache_block *_block, int counter) {
 
     _block->way = get_target_way(_block->index);
 
-    // fprintf(_debug, "%s: got target way %d\n", __func__, _block->way);
 
     if (_block->way < 0) {
         _block->way = invoke_repl_policy(_block->index, counter);
 
     }
 
-    // fprintf(_debug, "%s: before copying content\n", __func__);
     _block->valid = 1; // to be sure
     blocks[_block->index][_block->way] = *_block;
 }

@@ -13,7 +13,7 @@ using namespace std;
 
 pthread_mutex_t _lock;
 
-extern FILE *_debug;
+
 
 map<policy, string> policyString = {{INCLUSIVE, "Inclusive"}, {EXCLUSIVE, "Exclusive"}, {NINE, "Nine"}};
 
@@ -32,13 +32,14 @@ void *run_thread(void* _args) {
     _simulator->clean_memory();
     chrono::duration<double> timeTaken = eTime-sTime;
 
-    pthread_mutex_lock(&_lock);
+    LOCK
+
     printf("----------------STATS--------------------\n");
     _simulator->print_stats();
     printf("%c: Elapsed Time: %.3f secs\n", __args->_policy, timeTaken.count());
     printf("------------------------------------\n");
 
-    pthread_mutex_unlock(&_lock); 
+    UNLOCK;
 
     return NULL;
 }
@@ -49,7 +50,7 @@ void run(struct args *_args) {
     struct args *_inc_args, *_exc_args, *_nine_args;
 
     if (pthread_mutex_init(&_lock, NULL)) {
-        fprintf(_debug, "mutex init failed\n");
+        printf("mutex init failed\n");
         exit (1);
     }
 

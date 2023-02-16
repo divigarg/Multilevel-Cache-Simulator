@@ -25,8 +25,9 @@ Sets: 2048
 #define MB *1024*1024
 #define L2 2
 #define L3 3
+#define BELADY 'b'
+#define LRU    'l'
 
-extern FILE *_debug;
 
 struct cache_block {
     int index;
@@ -71,12 +72,11 @@ class Cache {
     int mask;   // Mask to get Index from address
     policy repl_policy;
 
-    map<unsigned long long, pair<int, vector<int>>> prebeladyData;
-
     /*
         constant fields section ends
     */
-
+    map<unsigned long long, pair<int, vector<int>>> prebeladyData;
+    
     struct cache_block **blocks;
 
     int         last_access_way;
@@ -93,9 +93,8 @@ class Cache {
     int get_target_way(int index);
     unsigned long long get_addr(struct cache_block*);
 
-    Cache (int w, int b_size, unsigned long c, int lvl, char rpl_policy = 'l') {
+    Cache (int w, int b_size, unsigned long c, int lvl, char rpl_policy = LRU) {
 
-        fprintf(_debug, "%s: top \n", __func__);
         int i = 0;
         this->level = lvl;
         this->ways = w;
@@ -112,11 +111,8 @@ class Cache {
 
         this->repl_policy = rpl_policy;
 
-        // printf("%s: level: %d, sets: %d, ways: %d, capacity: %ld, block_bits: %d\n",\
-                __func__, level, sets, ways, capacity, block_bits);
         // initialize 2d array for tags
         this->blocks = (struct cache_block**)malloc(sizeof(struct cache_block*)*sets);
-        // fprintf(_debug, "%s: 2d array pointer allocated\n", __func__);
 
         for (i; i < sets; i++) 
             this->blocks[i] = (struct cache_block*)malloc(sizeof(struct cache_block)*ways);
@@ -126,7 +122,6 @@ class Cache {
         for (int j = 0; j < sets; j++)
             this->lists[j].head = NULL;
             
-        // fprintf(_debug, "%s: list struct head null : %d\n", __func__, this->lists[0].head == NULL);
         this->prebeladyData.clear();
     };
       

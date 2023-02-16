@@ -1,0 +1,20 @@
+gromacs
+----------------STATS--------------------
+L1 Misses 3431511
+L2 Misses 336940
+L3 Misses 169368
+L3 Cold Misses 107962
+L3 Capacity Misses 61406
+i: Elapsed Time: 60.453 secs
+------------------------------------
+
+gcc
+----------------STATS--------------------
+L1 Misses 14610811
+L2 Misses 3035483
+L3 Misses 1369924
+L3 Cold Misses 773053
+L3 Capacity Misses 596871
+i: Elapsed Time: 773.849 secs
+------------------------------------
+
