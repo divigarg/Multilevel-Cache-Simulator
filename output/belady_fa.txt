@@ -1,0 +1,51 @@
+gromacs
+----------------STATS--------------------
+L1 Misses 3431511
+L2 Misses 336940
+L3 Misses 169368
+L3 Cold Misses 107962
+L3 Capacity Misses 61406
+i: Elapsed Time: 60.453 secs
+------------------------------------
+
+gcc
+----------------STATS--------------------
+L1 Misses 14610811
+L2 Misses 2946879
+L3 Misses 939289
+L3 Cold Misses 773053
+L3 Capacity Misses 166236
+i: Elapsed Time: 4010.067 secs
+------------------------------------
+
+bzip2
+----------------STATS--------------------
+L1 Misses 10657627
+L2 Misses 5351953
+L3 Misses 536836
+L3 Cold Misses 119753
+L3 Capacity Misses 417083
+i: Elapsed Time: 4952.241 secs
+------------------------------------
+
+h264ref
+----------------STATS--------------------
+L1 Misses 2348573
+L2 Misses 960590
+L3 Misses 111605
+L3 Cold Misses 63703
+L3 Capacity Misses 47902
+i: Elapsed Time: 264.961 secs
+------------------------------------
+
+hmmer
+----------------STATS--------------------
+L1 Misses 3509765
+L2 Misses 1732342
+L3 Misses 153447
+L3 Cold Misses 75884
+L3 Capacity Misses 77563
+i: Elapsed Time: 439.655 secs
+------------------------------------
+
+

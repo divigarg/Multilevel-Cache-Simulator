@@ -8,7 +8,7 @@ all: bin/simulator
 
 bin/simulator:
 	mkdir bin
-	$(G++) -I $(INCLUDE) -pthread -o $@ $(SRCS)
+	$(G++) -I $(INCLUDE) -pthread -w -o $@ $(SRCS)
 
 
 clean:

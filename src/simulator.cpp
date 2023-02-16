@@ -47,7 +47,7 @@ void simulator::preprocess_belady(const char* filename, int numtraces) {
 
 void simulator::start_simulator(const char* filename, int numtraces, bool belady) {
 
-    LOCK printf("%s: %c -> starting simulator\n", __func__, cache_policy); UNLOCK
+    // LOCK printf("%s: %c -> starting simulator\n", __func__, cache_policy); UNLOCK
     char* tmpfilename = (char *) malloc(strlen(filename));
     strcpy(tmpfilename, filename);
     char *token = strtok(tmpfilename, "/");
