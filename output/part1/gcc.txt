@@ -1,0 +1,22 @@
+Running on filename: ./traces/gcc.log_l1misstrace, num_traces: 2
+----------------STATS--------------------
+L1 Misses 14610811
+L2 Misses 3036461
+L3 Misses 1373402
+Inclusive: Elapsed Time: 37.609 secs
+------------------------------------
+
+----------------STATS--------------------
+L1 Misses 14610811
+L2 Misses 3029809
+L3 Misses 1366248
+Nine: Elapsed Time: 38.479 secs
+------------------------------------
+
+----------------STATS--------------------
+L1 Misses 14610811
+L2 Misses 3029809
+L3 Misses 1242824
+Exclusive: Elapsed Time: 38.690 secs
+------------------------------------
+

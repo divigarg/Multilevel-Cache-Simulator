@@ -1,0 +1,10 @@
+Running on filename: ./traces/gromacs.log_l1misstrace, num_traces: 1
+----------------STATS--------------------
+L1 Misses 3431511
+L2 Misses 336940
+L3 Misses 169368
+L3 Cold Misses 107962
+L3 Capacity Misses 61406
+Inclusive: Elapsed Time: 642.924 secs
+------------------------------------
+

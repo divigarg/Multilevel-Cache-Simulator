@@ -1,0 +1,11 @@
+
+Running on filename: ./traces/bzip2.log_l1misstrace, num_traces: 2
+----------------STATS--------------------
+L1 Misses 10657627
+L2 Misses 5397991
+L3 Misses 1361401
+L3 Cold Misses 119753
+L3 Capacity Misses 1241648
+Inclusive: Elapsed Time: 4857.743 secs
+------------------------------------
+

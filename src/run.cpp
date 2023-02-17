@@ -60,7 +60,7 @@ void run(struct args *_args) {
     memcpy(_inc_args, _args, sizeof(struct args));
 
 
-    // printf("%s:creating threads\n", __func__);
+    printf("%s:creating threads\n", __func__);
 
     
     _inc_args->_policy = INCLUSIVE;

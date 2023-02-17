@@ -1,0 +1,22 @@
+Running on filename: ./traces/gromacs.log_l1misstrace, num_traces: 1
+----------------STATS--------------------
+L1 Misses 3431511
+L2 Misses 336851
+L3 Misses 170531
+Inclusive: Elapsed Time: 3.120 secs
+------------------------------------
+
+----------------STATS--------------------
+L1 Misses 3431511
+L2 Misses 336724
+L3 Misses 170459
+Nine: Elapsed Time: 3.143 secs
+------------------------------------
+
+----------------STATS--------------------
+L1 Misses 3431511
+L2 Misses 336724
+L3 Misses 159302
+Exclusive: Elapsed Time: 3.177 secs
+------------------------------------
+

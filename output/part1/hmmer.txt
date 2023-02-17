@@ -1,0 +1,22 @@
+Running on filename: ./traces/hmmer.log_l1misstrace, num_traces: 1
+----------------STATS--------------------
+L1 Misses 3509765
+L2 Misses 1735322
+L3 Misses 376344
+Nine: Elapsed Time: 17.340 secs
+------------------------------------
+
+----------------STATS--------------------
+L1 Misses 3509765
+L2 Misses 1743421
+L3 Misses 391226
+Inclusive: Elapsed Time: 17.449 secs
+------------------------------------
+
+----------------STATS--------------------
+L1 Misses 3509765
+L2 Misses 1735322
+L3 Misses 300046
+Exclusive: Elapsed Time: 17.886 secs
+------------------------------------
+

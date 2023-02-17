@@ -1,0 +1,10 @@
+Running on filename: ./traces/sphinx3.log_l1misstrace, num_traces: 2
+----------------STATS--------------------
+L1 Misses 10753447
+L2 Misses 8818925
+L3 Misses 8387248
+L3 Cold Misses 122069
+L3 Capacity Misses 8265179
+Inclusive: Elapsed Time: 6487.708 secs
+------------------------------------
+

@@ -1,0 +1,12 @@
+Running on filename: ./traces/gcc.log_l1misstrace, num_traces: 2
+preprocess_belady: i -> processing input data for belady
+preprocess_belady: i -> processed input data for belady
+----------------STATS--------------------
+L1 Misses 14610811
+L2 Misses 2946879
+L3 Misses 939289
+L3 Cold Misses 773053
+L3 Capacity Misses 166236
+Inclusive: Elapsed Time: 4977.253 secs
+------------------------------------
+

@@ -1,0 +1,10 @@
+Running on filename: ./traces/hmmer.log_l1misstrace, num_traces: 1
+----------------STATS--------------------
+L1 Misses 3509765
+L2 Misses 1743222
+L3 Misses 377024
+L3 Cold Misses 75884
+L3 Capacity Misses 301140
+Inclusive: Elapsed Time: 792.246 secs
+------------------------------------
+

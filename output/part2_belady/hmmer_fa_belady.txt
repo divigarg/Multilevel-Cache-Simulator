@@ -1,0 +1,12 @@
+Running on filename: ./traces/hmmer.log_l1misstrace, num_traces: 1
+preprocess_belady: i -> processing input data for belady
+preprocess_belady: i -> processed input data for belady
+----------------STATS--------------------
+L1 Misses 3509765
+L2 Misses 1732342
+L3 Misses 153447
+L3 Cold Misses 75884
+L3 Capacity Misses 77563
+Inclusive: Elapsed Time: 759.778 secs
+------------------------------------
+

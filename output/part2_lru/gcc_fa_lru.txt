@@ -1,0 +1,10 @@
+Running on filename: ./traces/gcc.log_l1misstrace, num_traces: 2
+----------------STATS--------------------
+L1 Misses 14610811
+L2 Misses 3035483
+L3 Misses 1369924
+L3 Cold Misses 773053
+L3 Capacity Misses 596871
+Inclusive: Elapsed Time: 4194.015 secs
+------------------------------------
+

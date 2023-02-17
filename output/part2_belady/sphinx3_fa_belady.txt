@@ -1,0 +1,12 @@
+Running on filename: ./traces/sphinx3.log_l1misstrace, num_traces: 2
+preprocess_belady: i -> processing input data for belady
+preprocess_belady: i -> processed input data for belady
+----------------STATS--------------------
+L1 Misses 10753447
+L2 Misses 8843211
+L3 Misses 4168305
+L3 Cold Misses 122069
+L3 Capacity Misses 4046236
+Inclusive: Elapsed Time: 9927.721 secs
+------------------------------------
+

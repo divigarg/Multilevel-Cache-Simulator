@@ -41,6 +41,10 @@ void simulator::preprocess_belady(const char* filename, int numtraces) {
         fclose(fp);
     }
 
+    for(auto& kv: l3_cache->prebeladyData){
+        l3_cache->belady_sort.insert(make_pair(kv.second.second[0], kv.first));
+    }
+
     LOCK printf("%s: %c -> processed input data for belady\n", __func__, cache_policy); UNLOCK
 }
 
@@ -124,9 +128,14 @@ void simulator::process_entry(struct entry *_entry) {
 
     unsigned long long shift_addr = _entry->addr >> l3_cache->block_bits;
 
-    if (l3_cache->repl_policy == BELADY)
+    if (l3_cache->repl_policy == BELADY){
         l3_cache->prebeladyData[shift_addr].first++;
-        
+        //belady optimization
+        // auto &tmpDataPair = l3_cache->prebeladyData[shift_addr];
+        // l3_cache->belady_sort.erase(make_pair(tmpDataPair.second[tmpDataPair.first-1], shift_addr));
+        // l3_cache->belady_sort.insert(make_pair(tmpDataPair.second[tmpDataPair.first], shift_addr));
+    }
+
     l1_misses++;
 
     // get block for L2 lookup

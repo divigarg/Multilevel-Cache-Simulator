@@ -1,0 +1,22 @@
+Running on filename: ./traces/sphinx3.log_l1misstrace, num_traces: 2
+----------------STATS--------------------
+L1 Misses 10753447
+L2 Misses 8820349
+L3 Misses 8207362
+Inclusive: Elapsed Time: 44.924 secs
+------------------------------------
+
+----------------STATS--------------------
+L1 Misses 10753447
+L2 Misses 8815130
+L3 Misses 8205144
+Nine: Elapsed Time: 45.427 secs
+------------------------------------
+
+----------------STATS--------------------
+L1 Misses 10753447
+L2 Misses 8815130
+L3 Misses 7220776
+Exclusive: Elapsed Time: 47.858 secs
+------------------------------------
+

@@ -1,0 +1,12 @@
+Running on filename: ./traces/h264ref.log_l1misstrace, num_traces: 1
+preprocess_belady: i -> processing input data for belady
+preprocess_belady: i -> processed input data for belady
+----------------STATS--------------------
+L1 Misses 2348573
+L2 Misses 960590
+L3 Misses 111605
+L3 Cold Misses 63703
+L3 Capacity Misses 47902
+Inclusive: Elapsed Time: 475.853 secs
+------------------------------------
+

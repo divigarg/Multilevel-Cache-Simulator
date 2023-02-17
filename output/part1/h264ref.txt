@@ -1,0 +1,22 @@
+Running on filename: ./traces/h264ref.log_l1misstrace, num_traces: 1
+----------------STATS--------------------
+L1 Misses 2348573
+L2 Misses 969678
+L3 Misses 342146
+Inclusive: Elapsed Time: 10.738 secs
+------------------------------------
+
+----------------STATS--------------------
+L1 Misses 2348573
+L2 Misses 965624
+L3 Misses 333583
+Nine: Elapsed Time: 10.831 secs
+------------------------------------
+
+----------------STATS--------------------
+L1 Misses 2348573
+L2 Misses 965624
+L3 Misses 143681
+Exclusive: Elapsed Time: 11.013 secs
+------------------------------------
+

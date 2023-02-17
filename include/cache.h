@@ -123,10 +123,6 @@ class Cache {
     
         this->lists = (struct access_list*)malloc(sizeof(struct access_list)*sets);
         
-        // this->invalid_ways = (set<int>*)malloc(sizeof(set<int>)*this->sets);
-        // if(repl_policy == BELADY){
-
-        // }
         this->invalid_ways.resize(this->sets);
 
         for (int j = 0; j < sets; j++) {

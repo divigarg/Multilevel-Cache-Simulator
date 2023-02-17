@@ -1,0 +1,12 @@
+Running on filename: ./traces/bzip2.log_l1misstrace, num_traces: 2
+preprocess_belady: i -> processing input data for belady
+preprocess_belady: i -> processed input data for belady
+----------------STATS--------------------
+L1 Misses 10657627
+L2 Misses 5351953
+L3 Misses 536836
+L3 Cold Misses 119753
+L3 Capacity Misses 417083
+Inclusive: Elapsed Time: 4734.512 secs
+------------------------------------
+

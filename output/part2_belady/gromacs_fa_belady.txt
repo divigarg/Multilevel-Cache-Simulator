@@ -1,0 +1,12 @@
+Running on filename: ./traces/gromacs.log_l1misstrace, num_traces: 1
+preprocess_belady: i -> processing input data for belady
+preprocess_belady: i -> processed input data for belady
+----------------STATS--------------------
+L1 Misses 3431511
+L2 Misses 321640
+L3 Misses 143254
+L3 Cold Misses 107962
+L3 Capacity Misses 35292
+Inclusive: Elapsed Time: 421.956 secs
+------------------------------------
+

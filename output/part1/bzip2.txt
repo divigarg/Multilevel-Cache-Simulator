@@ -1,0 +1,22 @@
+Running on filename: ./traces/bzip2.log_l1misstrace, num_traces: 2
+----------------STATS--------------------
+L1 Misses 10657627
+L2 Misses 5397576
+L3 Misses 889221
+Exclusive: Elapsed Time: 14.830 secs
+------------------------------------
+
+----------------STATS--------------------
+L1 Misses 10657627
+L2 Misses 5398166
+L3 Misses 1446388
+Inclusive: Elapsed Time: 14.997 secs
+------------------------------------
+
+----------------STATS--------------------
+L1 Misses 10657627
+L2 Misses 5397576
+L3 Misses 1445846
+Nine: Elapsed Time: 15.102 secs
+------------------------------------
+
