@@ -75,8 +75,12 @@ class Cache {
     /*
         constant fields section ends
     */
-    map<unsigned long long, pair<int, vector<int>>> prebeladyData;
+    unordered_map<unsigned long long, pair<int, vector<int>>> prebeladyData;
     
+    vector<set<int>> invalid_ways;
+
+    set<pair<unsigned long long, int>> belady_sort;
+
     struct cache_block **blocks;
 
     int         last_access_way;
@@ -119,10 +123,22 @@ class Cache {
     
         this->lists = (struct access_list*)malloc(sizeof(struct access_list)*sets);
         
-        for (int j = 0; j < sets; j++)
+        // this->invalid_ways = (set<int>*)malloc(sizeof(set<int>)*this->sets);
+        // if(repl_policy == BELADY){
+
+        // }
+        this->invalid_ways.resize(this->sets);
+
+        for (int j = 0; j < sets; j++) {
             this->lists[j].head = NULL;
+            this->lists[j].item_index.assign(this->ways, NULL);
+            for (int k = 0; k < ways; k++)
+                invalid_ways[j].insert(k);
+        }
             
         this->prebeladyData.clear();
+
+
     };
       
 };

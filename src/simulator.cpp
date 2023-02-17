@@ -119,11 +119,14 @@ void simulator::process_entry(struct entry *_entry) {
 
     if (lookup_l1(_entry))
         return;
-    
 
     unsigned long long addr = 0;
 
+    unsigned long long shift_addr = _entry->addr >> l3_cache->block_bits;
 
+    if (l3_cache->repl_policy == BELADY)
+        l3_cache->prebeladyData[shift_addr].first++;
+        
     l1_misses++;
 
     // get block for L2 lookup

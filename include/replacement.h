@@ -5,6 +5,7 @@ struct access_list {
 
     struct list_item *head;
 
+    std::vector<struct list_item*> item_index;
     void add_item(struct list_item*);
     void remove_item(struct list_item*);
     struct list_item* find_item(int);
@@ -12,6 +13,7 @@ struct access_list {
 
     access_list() {
         head = NULL;
+
     }
 
 };

@@ -67,6 +67,7 @@ void Cache::lookup(struct cache_block *_block) {
 
 void Cache::invalidate(struct cache_block *_block) {
 
+    invalid_ways[_block->index].insert(_block->way);
     blocks[_block->index][_block->way].valid = false;
     blocks[_block->index][_block->way].tag = 0;
 }
@@ -78,7 +79,7 @@ void Cache::invalidate(struct cache_block *_block) {
 */
 int Cache::invoke_repl_policy(int index, int counter) {
     //pass in the _entry->counter
-    if(repl_policy == 'b'){
+    if(repl_policy == BELADY){
         //implement belady replacement
         //this will be in cache L3 only
         int max_distance = -1;
@@ -87,15 +88,14 @@ int Cache::invoke_repl_policy(int index, int counter) {
             auto &tmpDataPair = prebeladyData[blocks[index][curr_way].tag];
             int &curr_idx = tmpDataPair.first;
             auto &tmpData = tmpDataPair.second;
-            while(curr_idx != tmpData.size() && tmpData[curr_idx] < counter) curr_idx++;
 
             if(curr_idx == tmpData.size()){
                 _victim_way = curr_way;
                 goto redirect_way;
             }
 
-            if(max_distance < tmpData[curr_idx] - counter){
-                max_distance = tmpData[curr_idx] - counter;
+            if(max_distance < (tmpData)[curr_idx] - counter){
+                max_distance = (tmpData)[curr_idx] - counter;
                 _victim_way = curr_way;
             }
             
@@ -156,19 +156,25 @@ void Cache::copy(struct cache_block *_block, int counter) {
 
     }
 
+    invalid_ways[_block->index].erase(_block->way);
     _block->valid = 1; // to be sure
     blocks[_block->index][_block->way] = *_block;
 }
 
 int Cache::get_target_way(int index) {
 
-    int i = 0;
-    for (i; i < ways; i++) {
-        if (!blocks[index][i].valid)
-            return i;
-    }
+    // int i = 0;
+    // for (i; i < ways; i++) {
+    //     if (!blocks[index][i].valid)
+    //         return i;
+    // }
     
-    return -1;
+    // return -1;
+
+    if (invalid_ways[index].empty())
+        return -1;
+
+    return *invalid_ways[index].begin();
 
 }
 

@@ -10,7 +10,8 @@ void access_list::add_item(struct list_item* _item) {
         this->head = _item;
         this->head->next = this->head;
         this->head->prev = this->head;
-        return;
+
+        goto exit_add_item;
     }
 
 
@@ -19,6 +20,11 @@ void access_list::add_item(struct list_item* _item) {
     head->prev->next = _item;
     head->prev = _item;
     head = _item;
+
+exit_add_item:
+    
+    item_index[_item->way] = _item;
+    return;
 }
 
 void access_list::remove_item(struct list_item *_item) {
@@ -29,22 +35,7 @@ void access_list::remove_item(struct list_item *_item) {
 
 struct list_item* access_list::find_item(int _way) {
 
-    struct list_item *tmp = head;
-    if (is_null(tmp))
-        return NULL;
-    
-    
-    do {
-        if (tmp->way == _way)
-            return tmp;
-        
-
-        tmp = tmp->next;
-        
-    } while (tmp != head);
-
-
-    return NULL;
+    return item_index[_way];
 }
 
 void access_list::move_to_front(struct list_item *_item) {
