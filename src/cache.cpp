@@ -73,7 +73,7 @@ void Cache::invalidate(struct cache_block *_block) {
     //For belady_sort 
     if(repl_policy == BELADY){
         auto _victim_tag = blocks[_block->index][_block->way].tag;
-        int entry_no;
+        unsigned long long entry_no;
         if(prebeladyData[_victim_tag].first == prebeladyData[_victim_tag].second.size())
             entry_no = INT_MAX;
         else entry_no = prebeladyData[_victim_tag].second[prebeladyData[_victim_tag].first];
@@ -93,26 +93,26 @@ int Cache::invoke_repl_policy(int index, int counter) {
     if(repl_policy == BELADY){
         //implement belady replacement
         //this will be in cache L3 only
-        // int max_distance = -1;
-        // int _victim_way = -1;
-        // for(int curr_way = 0; curr_way < ways; curr_way++){
-        //     auto &tmpDataPair = prebeladyData[blocks[index][curr_way].tag];
-        //     int &curr_idx = tmpDataPair.first;
-        //     auto &tmpData = tmpDataPair.second;
+        int max_distance = -1;
+        int _victim_way = -1;
+        for(int curr_way = 0; curr_way < ways; curr_way++){
+            auto &tmpDataPair = prebeladyData[blocks[index][curr_way].tag];
+            int &curr_idx = tmpDataPair.first;
+            auto &tmpData = tmpDataPair.second;
 
-        //     if(curr_idx == tmpData.size()){
-        //         _victim_way = curr_way;
-        //         goto redirect_way;
-        //     }
+            if(curr_idx == tmpData.size()){
+                _victim_way = curr_way;
+                goto redirect_way;
+            }
 
-        //     if(max_distance < (tmpData)[curr_idx] - counter){
-        //         max_distance = (tmpData)[curr_idx] - counter;
-        //         _victim_way = curr_way;
-        //     }
+            if(max_distance < (tmpData)[curr_idx] - counter){
+                max_distance = (tmpData)[curr_idx] - counter;
+                _victim_way = curr_way;
+            }
             
-        // }
-        int _victim_way = belady_sort.rbegin()->second;
-    // redirect_way:
+        }
+        // int _victim_way = belady_sort.rbegin()->second;
+    redirect_way:
         if(_victim_way == -1){
             throw_error("error in belady replacement %d\n", index);
         }
@@ -120,14 +120,14 @@ int Cache::invoke_repl_policy(int index, int counter) {
         victim = new struct cache_block(_tmp.index, _tmp.way, _tmp.tag);
 
         //For belady_sort 
-        if(repl_policy == BELADY){
-            auto _victim_tag = blocks[_tmp.index][_tmp.way].tag;
-            int entry_no;
-            if(prebeladyData[_victim_tag].first == prebeladyData[_victim_tag].second.size())
-                entry_no = INT_MAX;
-            else entry_no = prebeladyData[_victim_tag].second[prebeladyData[_victim_tag].first];
-            belady_sort.erase(make_pair(entry_no, _tmp.way));
-        }
+        auto _victim_tag = blocks[_tmp.index][_tmp.way].tag;
+        unsigned long long entry_no;
+        if(prebeladyData[_victim_tag].first == prebeladyData[_victim_tag].second.size())
+            entry_no = LONG_MAX;
+        else entry_no = prebeladyData[_victim_tag].second[prebeladyData[_victim_tag].first];
+        belady_sort.erase(make_pair(entry_no, _tmp.way));
+
+        printf("victim: %d\n", _victim_way);
 
         return _victim_way;
     }
@@ -184,24 +184,17 @@ void Cache::copy(struct cache_block *_block, int counter) {
     
     //For belady_sort 
     if(repl_policy == BELADY){
-        auto _victim_tag = blocks[_block->index][_block->way].tag;
-        int entry_no;
+        auto _victim_tag = _block->tag;
+        unsigned long long entry_no;
         if(prebeladyData[_victim_tag].first == prebeladyData[_victim_tag].second.size())
-            entry_no = INT_MAX;
+            entry_no = LONG_MAX;
         else entry_no = prebeladyData[_victim_tag].second[prebeladyData[_victim_tag].first];
+        // printf("block Way: %d \n", _block->way);
         belady_sort.insert(make_pair(entry_no, _block->way));
     }
 }
 
 int Cache::get_target_way(int index) {
-
-    // int i = 0;
-    // for (i; i < ways; i++) {
-    //     if (!blocks[index][i].valid)
-    //         return i;
-    // }
-    
-    // return -1;
 
     if (invalid_ways[index].empty())
         return -1;

@@ -41,9 +41,9 @@ void simulator::preprocess_belady(const char* filename, int numtraces) {
         fclose(fp);
     }
 
-    for(auto& kv: l3_cache->prebeladyData){
-        l3_cache->belady_sort.insert(make_pair(kv.second.second[0], kv.first));
-    }
+    // for(auto& kv: l3_cache->prebeladyData){
+    //     l3_cache->belady_sort.insert(make_pair(kv.second.second[0], kv.first));
+    // }
 
     LOCK printf("%s: %c -> processed input data for belady\n", __func__, cache_policy); UNLOCK
 }
