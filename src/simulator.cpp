@@ -9,7 +9,6 @@ using namespace std;
 extern pthread_mutex_t _lock;
 
 void simulator::preprocess_belady(const char* filename, int numtraces) {
-    LOCK printf("%s: %c -> processing input data for belady\n", __func__, cache_policy); UNLOCK
     int belady_index = 0;
     
     FILE *fp;
@@ -18,7 +17,6 @@ void simulator::preprocess_belady(const char* filename, int numtraces) {
 
     for(int k=0; k < numtraces; k++){
         sprintf(input_name, "%s_%d", filename, k);
-        // fprintf(_debug,"inputname: %s\n", input_name);
         fp = fopen(input_name, "rb");
 
         assert(fp != NULL);
@@ -40,18 +38,11 @@ void simulator::preprocess_belady(const char* filename, int numtraces) {
         
         fclose(fp);
     }
-
-    // for(auto& kv: l3_cache->prebeladyData){
-    //     l3_cache->belady_sort.insert(make_pair(kv.second.second[0], kv.first));
-    // }
-
-    LOCK printf("%s: %c -> processed input data for belady\n", __func__, cache_policy); UNLOCK
 }
 
 
 void simulator::start_simulator(const char* filename, int numtraces, bool belady) {
 
-    // LOCK printf("%s: %c -> starting simulator\n", __func__, cache_policy); UNLOCK
     char* tmpfilename = (char *) malloc(strlen(filename));
     strcpy(tmpfilename, filename);
     char *token = strtok(tmpfilename, "/");
@@ -63,14 +54,14 @@ void simulator::start_simulator(const char* filename, int numtraces, bool belady
     char input_name[256];
 
     struct entry *_entry = (struct entry*)malloc(sizeof(struct entry));
-    ///
+
 
     if(belady) this->preprocess_belady(filename, numtraces);
 
     int entry_index = 0;
     for (int k=0; k<numtraces; k++) {
         sprintf(input_name, "%s_%d", filename, k);
-        // fprintf(_debug,"inputname: %s\n", input_name);
+
         fp = fopen(input_name, "rb");
         
         assert(fp != NULL);
@@ -80,16 +71,14 @@ void simulator::start_simulator(const char* filename, int numtraces, bool belady
             fread(&_entry->type, sizeof(char), 1, fp);
             fread(&_entry->addr, sizeof(unsigned long long), 1, fp);
             fread(&_entry->pc, sizeof(unsigned), 1, fp);
-            // LOCK
-            // printf("%s: Processing addr: %p type: %c\n",__func__, _entry->addr, _entry->type);
-            // UNLOCK;
+           
             _entry->counter = entry_index;
             if(_entry->type) entry_index++;
             process_entry(_entry);
             // Process the entry
         }
         fclose(fp);
-        // fprintf(_debug,"Done reading file %d!\n", k);
+
     }
 
     free(_entry);
@@ -130,27 +119,36 @@ void simulator::process_entry(struct entry *_entry) {
 
     if (l3_cache->repl_policy == BELADY){
         l3_cache->prebeladyData[shift_addr].first++;
-        //belady optimization
-        // auto &tmpDataPair = l3_cache->prebeladyData[shift_addr];
-        // l3_cache->belady_sort.erase(make_pair(tmpDataPair.second[tmpDataPair.first-1], shift_addr));
-        // l3_cache->belady_sort.insert(make_pair(tmpDataPair.second[tmpDataPair.first], shift_addr));
     }
 
     l1_misses++;
 
     // get block for L2 lookup
     l2_cache->get_block(_entry->addr, l2_block);
+    l3_cache->get_block(_entry->addr, l3_block);
 
     l2_cache->lookup(l2_block);
+    
+
     if (l2_block->valid) {
         l2_cache->update_repl_params(l2_block->index, l2_block->way);
-            
+        
+        if(l3_cache->repl_policy == BELADY){
+            auto _victim_tag = l3_block->tag;
+            unsigned long long entry_no;
+            entry_no = l3_cache->prebeladyData[_victim_tag].second[l3_cache->prebeladyData[_victim_tag].first - 1];
+            l3_cache->belady_sort.erase(make_pair(entry_no, l3_cache->tag_index[_victim_tag]));
+            if(l3_cache->prebeladyData[_victim_tag].first == l3_cache->prebeladyData[_victim_tag].second.size())
+                entry_no = LONG_MAX;
+            else entry_no = l3_cache->prebeladyData[_victim_tag].second[l3_cache->prebeladyData[_victim_tag].first];
+            l3_cache->belady_sort.insert(make_pair(entry_no, l3_cache->tag_index[_victim_tag]));
+        }
+
         goto clean_l2;
     }
 
     l2_misses++;
 
-    l3_cache->get_block(_entry->addr, l3_block);
     l3_cache->lookup(l3_block);
     
     if (l3_block->valid) {

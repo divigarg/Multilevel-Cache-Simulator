@@ -55,6 +55,26 @@ void Cache::lookup(struct cache_block *_block) {
     
     int i;
 
+    if (this->sets == 1) {
+        if(tag_index.find(_block->tag) != tag_index.end()){
+            _block->way = tag_index[_block->tag];
+            _block->valid = true;
+            
+            //For belady_sort 
+            if(repl_policy == BELADY){
+                auto _victim_tag = _block->tag;
+                unsigned long long entry_no;
+                entry_no = prebeladyData[_victim_tag].second[prebeladyData[_victim_tag].first - 1];
+                belady_sort.erase(make_pair(entry_no, _block->way));
+                if(prebeladyData[_victim_tag].first == prebeladyData[_victim_tag].second.size())
+                    entry_no = LONG_MAX;
+                else entry_no = prebeladyData[_victim_tag].second[prebeladyData[_victim_tag].first];
+                belady_sort.insert(make_pair(entry_no, _block->way));
+            }
+        }
+        return;
+    }
+
     for (i = 0; i < ways; i++) {
         if (blocks[_block->index][i].valid && blocks[_block->index][i].tag == _block->tag) {
             _block->way = i;
@@ -70,16 +90,6 @@ void Cache::invalidate(struct cache_block *_block) {
     invalid_ways[_block->index].insert(_block->way);
     blocks[_block->index][_block->way].valid = false;
 
-    //For belady_sort 
-    if(repl_policy == BELADY){
-        auto _victim_tag = blocks[_block->index][_block->way].tag;
-        unsigned long long entry_no;
-        if(prebeladyData[_victim_tag].first == prebeladyData[_victim_tag].second.size())
-            entry_no = INT_MAX;
-        else entry_no = prebeladyData[_victim_tag].second[prebeladyData[_victim_tag].first];
-        belady_sort.erase(make_pair(entry_no, _block->way));
-    }
-
     blocks[_block->index][_block->way].tag = 0;
 }
 
@@ -90,63 +100,60 @@ void Cache::invalidate(struct cache_block *_block) {
 */
 int Cache::invoke_repl_policy(int index, int counter) {
     //pass in the _entry->counter
+    int _victim_way = -1;
+    struct cache_block _tmp;
+    
     if(repl_policy == BELADY){
         //implement belady replacement
         //this will be in cache L3 only
-        int max_distance = -1;
-        int _victim_way = -1;
-        for(int curr_way = 0; curr_way < ways; curr_way++){
-            auto &tmpDataPair = prebeladyData[blocks[index][curr_way].tag];
-            int &curr_idx = tmpDataPair.first;
-            auto &tmpData = tmpDataPair.second;
+        // int max_distance = -1;
+        // for(int curr_way = 0; curr_way < ways; curr_way++){
+            // auto &tmpDataPair = prebeladyData[blocks[index][curr_way].tag];
+            // int &curr_idx = tmpDataPair.first;
+            // auto &tmpData = tmpDataPair.second;
 
-            if(curr_idx == tmpData.size()){
-                _victim_way = curr_way;
-                goto redirect_way;
-            }
+            // if(curr_idx == tmpData.size()){
+                // _victim_way = curr_way;
+                // break;
+            // }
 
-            if(max_distance < (tmpData)[curr_idx] - counter){
-                max_distance = (tmpData)[curr_idx] - counter;
-                _victim_way = curr_way;
-            }
+            // if(max_distance < (tmpData)[curr_idx] - counter){
+                // max_distance = (tmpData)[curr_idx] - counter;
+                // _victim_way = curr_way;
+            // }
             
-        }
-        // int _victim_way = belady_sort.rbegin()->second;
-    redirect_way:
-        if(_victim_way == -1){
-            throw_error("error in belady replacement %d\n", index);
-        }
-        struct cache_block _tmp = blocks[index][_victim_way];
-        victim = new struct cache_block(_tmp.index, _tmp.way, _tmp.tag);
-
+        // }
+        _victim_way = belady_sort.rbegin()->second;
         //For belady_sort 
-        auto _victim_tag = blocks[_tmp.index][_tmp.way].tag;
+        auto _victim_tag = blocks[index][_victim_way].tag;
         unsigned long long entry_no;
         if(prebeladyData[_victim_tag].first == prebeladyData[_victim_tag].second.size())
             entry_no = LONG_MAX;
         else entry_no = prebeladyData[_victim_tag].second[prebeladyData[_victim_tag].first];
-        belady_sort.erase(make_pair(entry_no, _tmp.way));
+        belady_sort.erase(make_pair(entry_no, _victim_way));
 
-        printf("victim: %d\n", _victim_way);
-
-        return _victim_way;
     }
+    else{
     // it should set the victim cache block
     // Victim will be the tail of list
-    struct cache_block _tmp;
+        struct list_item *_victim = lists[index].head->prev;
+        _victim_way = _victim->way;
+    }
 
-    struct list_item *_victim = lists[index].head->prev;
-
-    if (is_null(_victim)) {
+    if (_victim_way == -1) {
         throw_error("error in replacment list of index %d\n", index);
     }
 
-    _tmp = blocks[index][_victim->way];
+    _tmp = blocks[index][_victim_way];
 
     
     victim = new struct cache_block(_tmp.index, _tmp.way, _tmp.tag);
+
+    if(this->sets == 1){
+        tag_index.erase(_tmp.tag);
+    }
     
-    return _victim->way;
+    return _victim_way;
 }
 
 
@@ -170,6 +177,7 @@ void Cache::update_repl_params(int index, int way) {
 
 void Cache::copy(struct cache_block *_block, int counter) {
 
+
     _block->way = get_target_way(_block->index);
 
 
@@ -181,15 +189,19 @@ void Cache::copy(struct cache_block *_block, int counter) {
     invalid_ways[_block->index].erase(_block->way);
     _block->valid = 1; // to be sure
     blocks[_block->index][_block->way] = *_block;
-    
+
+    // optimize for fully assoc cache
+    if (this->sets == 1) {
+        tag_index[_block->tag] = _block->way;
+    }
+
     //For belady_sort 
     if(repl_policy == BELADY){
-        auto _victim_tag = _block->tag;
+        auto _victim_tag = blocks[_block->index][_block->way].tag;
         unsigned long long entry_no;
         if(prebeladyData[_victim_tag].first == prebeladyData[_victim_tag].second.size())
             entry_no = LONG_MAX;
         else entry_no = prebeladyData[_victim_tag].second[prebeladyData[_victim_tag].first];
-        // printf("block Way: %d \n", _block->way);
         belady_sort.insert(make_pair(entry_no, _block->way));
     }
 }

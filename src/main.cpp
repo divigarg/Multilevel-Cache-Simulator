@@ -70,13 +70,14 @@ int main(int argc, char* argv[]) {
 
 
     if(program["--belady"] == true){
+        if (!_args->full_assoc) {
+            cout << "cannot use --belady without --max_assoc" << endl;
+            cout << program;
+            exit(1);
+        }
         _args->belady = true;
     }
     
-
-
-    printf("Running on filename: %s, num_traces: %d\n", \
-            _args->filename, _args->num_traces);
         
     run(_args);
 

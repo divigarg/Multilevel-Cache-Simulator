@@ -81,6 +81,8 @@ class Cache {
 
     set<pair<unsigned long long, int>> belady_sort;
 
+    unordered_map<unsigned long long, int> tag_index;
+
     struct cache_block **blocks;
 
     int         last_access_way;
@@ -133,7 +135,8 @@ class Cache {
         }
             
         this->prebeladyData.clear();
-
+        this->tag_index.clear();
+        this->belady_sort.clear();
 
     };
       

@@ -34,10 +34,10 @@ void *run_thread(void* _args) {
 
     LOCK
 
-    printf("----------------STATS--------------------\n");
+    printf("----------------%s Stats--------------------\n", policyString[__args->_policy].c_str());
     _simulator->print_stats();
-    printf("%s: Elapsed Time: %.3f secs\n", policyString[__args->_policy].c_str(), timeTaken.count());
-    printf("------------------------------------\n\n");
+    printf("Elapsed Time: %.3f secs\n", timeTaken.count());
+    printf("----------------------------------------------\n");
 
     UNLOCK;
 
@@ -60,7 +60,6 @@ void run(struct args *_args) {
     memcpy(_inc_args, _args, sizeof(struct args));
 
 
-    printf("%s:creating threads\n", __func__);
 
     
     _inc_args->_policy = INCLUSIVE;
